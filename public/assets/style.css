@@ -1,0 +1,412 @@
+/* Publicaties van Lachman Soedamah — huisstijl */
+
+:root {
+  --paper: #f8f5ef;
+  --card: #fffdf8;
+  --ink: #26221c;
+  --muted: #6f675c;
+  --line: #e6ddcd;
+  --accent: #8a3033;
+  --accent-dark: #6e2427;
+  --success-bg: #e8f2e4;
+  --success-ink: #2f5c2a;
+  --error-bg: #f9e6e4;
+  --error-ink: #8a2c25;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+main.wrap { flex: 1; padding-top: 2rem; padding-bottom: 3rem; }
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+h1 { font-size: 2rem; margin: 0 0 0.75rem; }
+
+a { color: var(--accent); }
+a:hover { color: var(--accent-dark); }
+
+.muted { color: var(--muted); font-size: 0.92rem; }
+
+/* ---------- Header & footer ---------- */
+
+.site-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1.1rem;
+  padding-bottom: 1.1rem;
+}
+
+.brand { text-decoration: none; color: var(--ink); }
+.brand-name {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  letter-spacing: 0.01em;
+}
+.brand-sub {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+
+.site-nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+.site-nav a {
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 0.98rem;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+.site-nav a:hover { border-bottom-color: var(--accent); color: var(--ink); }
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: var(--card);
+  padding: 1.5rem 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+.site-footer p { margin: 0.2rem 0; }
+.footer-note { font-size: 0.85rem; }
+
+/* ---------- Overzicht ---------- */
+
+.intro { max-width: 640px; margin-bottom: 2.25rem; }
+.intro p { color: var(--muted); margin: 0; }
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 1.75rem;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.book-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 24px -14px rgba(38, 34, 28, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.book-card:hover .book-cover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px -14px rgba(38, 34, 28, 0.6);
+}
+
+.cover-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.25rem;
+  background: linear-gradient(150deg, var(--accent) 0%, #4f1b1d 100%);
+  color: #f6ede3;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.book-card-body { padding: 0.85rem 0.15rem 0; display: block; }
+.book-title { display: block; font-family: var(--serif); font-size: 1.12rem; line-height: 1.3; }
+.book-subtitle { display: block; color: var(--muted); font-size: 0.92rem; margin-top: 0.15rem; }
+.book-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.price { font-weight: 700; color: var(--accent); }
+.formats {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.empty-state {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  max-width: 640px;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+/* ---------- Boekpagina ---------- */
+
+.book-detail {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+.book-detail-cover .book-cover { max-width: 280px; }
+.book-detail-subtitle {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin: 0 0 0.25rem;
+}
+.book-detail-author { color: var(--muted); margin: 0 0 1.25rem; }
+
+.buy-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+.buy-price {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 0.85rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+.buy-note { color: var(--muted); font-size: 0.9rem; margin: 0.75rem 0 0; }
+
+.book-description p { margin: 0 0 1rem; }
+.back-link { margin-top: 2.5rem; }
+.back-link a, .download-buttons + p a { text-decoration: none; }
+
+/* ---------- Knoppen ---------- */
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-family: var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-dark); color: #fff; }
+.btn-secondary {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn-secondary:hover { border-color: var(--muted); color: var(--ink); }
+.btn-danger { background: var(--error-ink); color: #fff; }
+.btn-danger:hover { background: #6d211b; color: #fff; }
+.btn-danger-link {
+  background: none;
+  color: var(--error-ink);
+  border: none;
+  text-decoration: underline;
+}
+.btn-small { padding: 0.3rem 0.75rem; font-size: 0.88rem; }
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.98rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+}
+.link-button:hover { border-bottom-color: var(--accent); }
+
+.inline-form { display: inline; }
+
+/* ---------- Bedankt & download ---------- */
+
+.thanks {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 2.25rem 2rem;
+  max-width: 640px;
+  margin: 1rem auto;
+}
+.download-buttons { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.25rem 0; }
+
+/* ---------- Formulieren ---------- */
+
+.form-page { max-width: 560px; margin: 0 auto; }
+
+.stacked-form { margin-top: 1.25rem; }
+.stacked-form label { display: block; font-weight: 600; margin: 1rem 0 0.3rem; }
+.stacked-form input[type="text"],
+.stacked-form input[type="email"],
+.stacked-form input[type="password"],
+.stacked-form input[type="number"],
+.stacked-form textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+}
+.stacked-form input:focus,
+.stacked-form textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+.stacked-form button[type="submit"] { margin-top: 1.25rem; }
+.stacked-form input[type="file"] { margin: 0.25rem 0 0.5rem; }
+
+.form-wide { max-width: 720px; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.field-hint { color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0 0; }
+
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 1.25rem 1.25rem;
+  margin: 1.75rem 0;
+  background: var(--card);
+}
+legend { font-weight: 700; padding: 0 0.5rem; }
+
+.checkbox-line { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; margin-top: 1.25rem; }
+.checkbox-inline { font-weight: 400; margin-left: 0.75rem; color: var(--error-ink); }
+.current-file { margin: 0.25rem 0 0.5rem; font-size: 0.92rem; color: var(--muted); }
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.75rem;
+}
+
+/* Honeypot tegen spamrobots: onzichtbaar voor bezoekers */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* ---------- Meldingen & badges ---------- */
+
+.alert {
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+.alert-success { background: var(--success-bg); color: var(--success-ink); }
+.alert-error { background: var(--error-bg); color: var(--error-ink); }
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.1rem 0.7rem;
+  font-size: 0.8rem;
+  background: var(--line);
+  color: var(--ink);
+  white-space: nowrap;
+}
+.badge-success { background: var(--success-bg); color: var(--success-ink); }
+.badge-error { background: var(--error-bg); color: var(--error-ink); }
+
+/* ---------- Beheer ---------- */
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.admin-toolbar h1 { margin: 0; }
+.stats-line { color: var(--muted); margin-top: 0; }
+
+.table-scroll { overflow-x: auto; }
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.admin-table th, .admin-table td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.admin-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table .actions { white-space: nowrap; }
+.admin-table .actions form { margin: 0 0 0.25rem; }
+.nowrap { white-space: nowrap; }
+
+/* ---------- Mobiel ---------- */
+
+@media (max-width: 720px) {
+  .book-detail { grid-template-columns: 1fr; }
+  .book-detail-cover { max-width: 240px; }
+  .form-row { grid-template-columns: 1fr; }
+  h1 { font-size: 1.6rem; }
+}

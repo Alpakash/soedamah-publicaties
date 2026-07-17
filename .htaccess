@@ -1,0 +1,10 @@
+# Vangnet voor als de document root niet op /public staat:
+# alle verzoeken worden dan doorgestuurd naar de public-map.
+# Staat de document root wél op /public (aanbevolen), dan wordt dit bestand nooit gebruikt.
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
