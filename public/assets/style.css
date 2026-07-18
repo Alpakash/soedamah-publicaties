@@ -211,8 +211,7 @@ a:hover { color: var(--accent-dark); }
 
 .book-cover {
   width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
+  height: auto;
   border-radius: 6px;
   background: var(--card);
   border: 1px solid var(--line);
@@ -227,6 +226,7 @@ a:hover { color: var(--accent-dark); }
 }
 
 .cover-fallback {
+  aspect-ratio: 2 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
