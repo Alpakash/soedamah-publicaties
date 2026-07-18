@@ -67,7 +67,10 @@ include APP_ROOT . '/app/templates/admin_header.php';
       <tr>
         <td class="nowrap"><?= e(format_datetime($order['created_at'])) ?></td>
         <td><?= e($order['book_title']) ?></td>
-        <td><?= $order['email'] !== '' ? e($order['email']) : '<span class="muted">—</span>' ?></td>
+        <td>
+          <?php if ($order['name'] !== ''): ?><?= e($order['name']) ?><br><?php endif; ?>
+          <?= $order['email'] !== '' ? '<span class="muted">' . e($order['email']) . '</span>' : '<span class="muted">—</span>' ?>
+        </td>
         <td class="nowrap"><?= e(format_price((int) $order['amount_cents'])) ?></td>
         <td><span class="badge <?= e($badgeClass) ?>"><?= e($label) ?></span></td>
         <td class="nowrap">

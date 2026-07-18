@@ -34,18 +34,19 @@ function order_expiry_from_now(): string
 /**
  * Maakt een bestelling aan. Status: 'pending' (wacht op betaling) of 'free'.
  */
-function order_create(array $book, string $status, string $email = '', ?string $sessionId = null): array
+function order_create(array $book, string $status, string $email = '', string $name = '', ?string $sessionId = null): array
 {
     $stmt = db()->prepare(
         'INSERT INTO orders
-            (book_id, book_title, email, stripe_session_id, amount_cents, status,
+            (book_id, book_title, email, name, stripe_session_id, amount_cents, status,
              token, expires_at, created_at, paid_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $stmt->execute([
         $book['id'],
         $book['title'],
         $email,
+        $name,
         $sessionId,
         (int) $book['price_cents'],
         $status,
@@ -129,10 +130,13 @@ function order_download_url(array $order, string $format): string
 function orders_send_links(array $orders): bool
 {
     $email = '';
+    $buyerName = '';
     foreach ($orders as $order) {
-        if ($order['email'] !== '') {
+        if ($email === '' && $order['email'] !== '') {
             $email = $order['email'];
-            break;
+        }
+        if ($buyerName === '' && !empty($order['name'])) {
+            $buyerName = $order['name'];
         }
     }
     if ($email === '') {
@@ -154,7 +158,7 @@ function orders_send_links(array $orders): bool
 
     $isFree = count($unsent) === 1 && $unsent[0][0]['status'] === 'free';
     $lines = [];
-    $lines[] = 'Beste lezer,';
+    $lines[] = 'Beste ' . ($buyerName !== '' ? $buyerName : 'lezer') . ',';
     $lines[] = '';
     if (count($unsent) === 1) {
         $lines[] = ($isFree
@@ -210,17 +214,22 @@ function orders_notify_admin(array $orders): void
     $total = 0;
     $itemLines = [];
     $email = '';
+    $name = '';
     foreach ($orders as $order) {
         $total += (int) $order['amount_cents'];
         $itemLines[] = '- ' . $order['book_title'] . ' (' . format_price((int) $order['amount_cents']) . ')';
         if ($email === '' && $order['email'] !== '') {
             $email = $order['email'];
         }
+        if ($name === '' && !empty($order['name'])) {
+            $name = $order['name'];
+        }
     }
+    $koper = trim($name . ($email !== '' ? ' <' . $email . '>' : ''));
     $body = "Er is een nieuwe bestelling binnengekomen.\n\n"
         . implode("\n", $itemLines) . "\n\n"
         . 'Totaal: ' . format_price($total) . "\n"
-        . 'Koper:  ' . ($email !== '' ? $email : 'onbekend') . "\n\n"
+        . 'Koper:  ' . ($koper !== '' ? $koper : 'onbekend') . "\n\n"
         . 'Bekijk alle bestellingen: ' . url('admin/bestellingen.php') . "\n";
     $subject = count($orders) === 1
         ? 'Nieuwe bestelling: ' . $orders[0]['book_title']

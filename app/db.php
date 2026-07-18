@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS orders (
     book_id           INTEGER,
     book_title        TEXT NOT NULL DEFAULT '',
     email             TEXT NOT NULL DEFAULT '',
+    name              TEXT NOT NULL DEFAULT '',
     stripe_session_id TEXT,
     amount_cents      INTEGER NOT NULL DEFAULT 0,
     status            TEXT NOT NULL DEFAULT 'pending',
@@ -103,12 +104,25 @@ CREATE TABLE orders_new (
     paid_at           TEXT
 )
 SQL);
-        $pdo->exec('INSERT INTO orders_new SELECT * FROM orders');
+        $pdo->exec(
+            'INSERT INTO orders_new
+                (id, book_id, book_title, email, stripe_session_id, amount_cents, status,
+                 token, downloads_pdf, downloads_epub, expires_at, email_sent_at, created_at, paid_at)
+             SELECT id, book_id, book_title, email, stripe_session_id, amount_cents, status,
+                 token, downloads_pdf, downloads_epub, expires_at, email_sent_at, created_at, paid_at
+             FROM orders'
+        );
         $pdo->exec('DROP TABLE orders');
         $pdo->exec('ALTER TABLE orders_new RENAME TO orders');
         $pdo->exec('COMMIT');
     }
     $pdo->exec('CREATE INDEX IF NOT EXISTS idx_orders_session ON orders (stripe_session_id)');
+
+    // Migratie voor bestaande databases: naamveld voor het afrekenformulier.
+    $orderColumns = $pdo->query('PRAGMA table_info(orders)')->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('name', $orderColumns, true)) {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN name TEXT NOT NULL DEFAULT ''");
+    }
 }
 
 function setting_get(string $name, ?string $default = null): ?string

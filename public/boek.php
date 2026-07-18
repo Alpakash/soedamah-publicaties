@@ -53,18 +53,15 @@ include APP_ROOT . '/app/templates/header.php';
         <a class="btn btn-primary" href="<?= e(url('gratis.php?b=' . $book['slug'])) ?>">Gratis downloaden</a>
         <p class="buy-note">Je ontvangt de downloadlink direct en per e-mail.</p>
       <?php else: ?>
-        <div class="buy-actions">
-          <a class="btn btn-primary" href="<?= e(url('afrekenen.php?b=' . $book['slug'])) ?>">Nu kopen</a>
-          <?php if (in_array((int) $book['id'], cart_ids(), true)): ?>
-            <a class="btn btn-secondary" href="<?= e(url('mandje.php')) ?>">In je mandje ✓</a>
-          <?php else: ?>
-            <form method="post" action="<?= e(url('mandje.php')) ?>" class="inline-form">
-              <input type="hidden" name="action" value="add">
-              <input type="hidden" name="id" value="<?= (int) $book['id'] ?>">
-              <button type="submit" class="btn btn-secondary">In winkelmandje</button>
-            </form>
-          <?php endif; ?>
-        </div>
+        <?php if (in_array((int) $book['id'], cart_ids(), true)): ?>
+          <a class="btn btn-primary" href="<?= e(url('mandje.php')) ?>">Naar het mandje →</a>
+        <?php else: ?>
+          <form method="post" action="<?= e(url('mandje.php')) ?>" class="inline-form">
+            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="id" value="<?= (int) $book['id'] ?>">
+            <button type="submit" class="btn btn-primary">In winkelmandje</button>
+          </form>
+        <?php endif; ?>
         <p class="buy-note">Betaal met iDEAL of creditcard — direct downloaden na betaling.</p>
       <?php endif; ?>
     </div>

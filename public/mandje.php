@@ -63,13 +63,9 @@ include APP_ROOT . '/app/templates/header.php';
     </div>
 
     <div class="form-actions">
-      <form method="post" action="<?= e(url('afrekenen.php')) ?>" class="inline-form">
-        <input type="hidden" name="mandje" value="1">
-        <button type="submit" class="btn btn-primary btn-large">Afrekenen</button>
-      </form>
+      <a class="btn btn-primary btn-large" href="<?= e(url('afrekenen.php')) ?>">Afrekenen</a>
       <a class="btn btn-secondary" href="<?= e(url()) ?>">Verder kijken</a>
     </div>
-    <p class="muted">Betalen met iDEAL of creditcard — direct downloaden na betaling.</p>
   <?php endif; ?>
 </div>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>
