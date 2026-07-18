@@ -64,7 +64,6 @@ include APP_ROOT . '/app/templates/header.php';
             <button type="submit" class="btn btn-primary">Kopen</button>
           </form>
         <?php endif; ?>
-        <p class="buy-note">Betaal met iDEAL of creditcard — direct downloaden na betaling.</p>
       <?php endif; ?>
     </div>
 

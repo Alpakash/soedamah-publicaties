@@ -12,10 +12,6 @@
          <a href="https://soedamah.nl/publicaties">Artikelen &amp; beschouwingen</a><br>
          <a href="https://soedamah.nl/contact/">Contact</a></p>
     </div>
-    <div>
-      <p class="footer-heading">Bestellen</p>
-      <p>Betalen via iDEAL of creditcard — downloadlink direct na betaling, ook per e-mail.</p>
-    </div>
   </div>
   <div class="wrap footer-bottom">
     <p>© <?= date('Y') ?> Lachman Soedamah · Alle uitgaven zijn bedoeld voor persoonlijk gebruik</p>
