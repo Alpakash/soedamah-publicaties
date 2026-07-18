@@ -14,6 +14,7 @@ date_default_timezone_set('Europe/Amsterdam');
 require __DIR__ . '/helpers.php';
 require __DIR__ . '/db.php';
 require __DIR__ . '/books.php';
+require __DIR__ . '/cart.php';
 require __DIR__ . '/stripe.php';
 require __DIR__ . '/mail.php';
 require __DIR__ . '/orders.php';

@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS orders (
     book_id           INTEGER,
     book_title        TEXT NOT NULL DEFAULT '',
     email             TEXT NOT NULL DEFAULT '',
-    stripe_session_id TEXT UNIQUE,
+    stripe_session_id TEXT,
     amount_cents      INTEGER NOT NULL DEFAULT 0,
     status            TEXT NOT NULL DEFAULT 'pending',
     token             TEXT UNIQUE,
@@ -76,6 +76,39 @@ CREATE TABLE IF NOT EXISTS orders (
     paid_at           TEXT
 )
 SQL);
+
+    // Migratie voor bestaande databases: het winkelmandje laat meerdere
+    // bestellingen dezelfde checkout-sessie delen, dus de UNIQUE-beperking
+    // op stripe_session_id moet weg (SQLite vereist daarvoor een herbouw).
+    $tableSql = (string) $pdo->query(
+        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'orders'"
+    )->fetchColumn();
+    if (str_contains($tableSql, 'stripe_session_id TEXT UNIQUE')) {
+        $pdo->exec('BEGIN IMMEDIATE');
+        $pdo->exec(<<<SQL
+CREATE TABLE orders_new (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id           INTEGER,
+    book_title        TEXT NOT NULL DEFAULT '',
+    email             TEXT NOT NULL DEFAULT '',
+    stripe_session_id TEXT,
+    amount_cents      INTEGER NOT NULL DEFAULT 0,
+    status            TEXT NOT NULL DEFAULT 'pending',
+    token             TEXT UNIQUE,
+    downloads_pdf     INTEGER NOT NULL DEFAULT 0,
+    downloads_epub    INTEGER NOT NULL DEFAULT 0,
+    expires_at        TEXT,
+    email_sent_at     TEXT,
+    created_at        TEXT NOT NULL,
+    paid_at           TEXT
+)
+SQL);
+        $pdo->exec('INSERT INTO orders_new SELECT * FROM orders');
+        $pdo->exec('DROP TABLE orders');
+        $pdo->exec('ALTER TABLE orders_new RENAME TO orders');
+        $pdo->exec('COMMIT');
+    }
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_orders_session ON orders (stripe_session_id)');
 }
 
 function setting_get(string $name, ?string $default = null): ?string

@@ -23,40 +23,33 @@ $event = json_decode($payload, true);
 $type = is_array($event) ? (string) ($event['type'] ?? '') : '';
 $session = is_array($event) ? ($event['data']['object'] ?? []) : [];
 
-$findOrder = static function (array $session): ?array {
-    $orderId = (int) ($session['metadata']['order_id'] ?? 0);
-    if ($orderId > 0) {
-        $order = order_find($orderId);
-        if ($order !== null) {
-            return $order;
+$findOrders = static function (array $session): array {
+    $sessionId = (string) ($session['id'] ?? '');
+    $orders = $sessionId !== '' ? orders_find_by_session($sessionId) : [];
+    if ($orders === []) {
+        foreach (explode(',', (string) ($session['metadata']['order_ids'] ?? '')) as $id) {
+            $order = order_find((int) $id);
+            if ($order !== null) {
+                $orders[] = $order;
+            }
         }
     }
-    $sessionId = (string) ($session['id'] ?? '');
-    return $sessionId !== '' ? order_find_by_session($sessionId) : null;
+    return $orders;
 };
 
 switch ($type) {
     case 'checkout.session.completed':
     case 'checkout.session.async_payment_succeeded':
-        $order = $findOrder($session);
-        if ($order === null) {
-            // Vangnet: bestelling reconstrueren op basis van metadata.
-            $bookId = (int) ($session['metadata']['book_id'] ?? 0);
-            $book = $bookId > 0 ? book_find($bookId) : null;
-            if ($book !== null && !empty($session['id'])) {
-                $order = order_create($book, 'pending', '', (string) $session['id']);
-            }
-        }
-        if ($order !== null && ($session['payment_status'] ?? '') === 'paid') {
+        $orders = $findOrders($session);
+        if ($orders !== [] && ($session['payment_status'] ?? '') === 'paid') {
             $email = (string) ($session['customer_details']['email'] ?? '');
-            order_mark_paid($order, $email);
-            log_msg('Webhook: bestelling ' . $order['id'] . ' betaald (' . $type . ')');
+            orders_mark_paid($orders, $email);
+            log_msg('Webhook: bestelling(en) ' . implode(',', array_column($orders, 'id')) . ' betaald (' . $type . ')');
         }
         break;
 
     case 'checkout.session.async_payment_failed':
-        $order = $findOrder($session);
-        if ($order !== null) {
+        foreach ($findOrders($session) as $order) {
             order_mark_failed($order);
             log_msg('Webhook: betaling mislukt voor bestelling ' . $order['id']);
         }

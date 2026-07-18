@@ -9,12 +9,12 @@ function order_find(int $id): ?array
     return $order ?: null;
 }
 
-function order_find_by_session(string $sessionId): ?array
+/** Alle bestellingen die bij één checkout-sessie horen (mandje = meerdere). */
+function orders_find_by_session(string $sessionId): array
 {
-    $stmt = db()->prepare('SELECT * FROM orders WHERE stripe_session_id = ?');
+    $stmt = db()->prepare('SELECT * FROM orders WHERE stripe_session_id = ? ORDER BY id');
     $stmt->execute([$sessionId]);
-    $order = $stmt->fetch();
-    return $order ?: null;
+    return $stmt->fetchAll();
 }
 
 function order_find_by_token(string $token): ?array
@@ -68,31 +68,47 @@ function order_set_session(int $orderId, string $sessionId): void
 }
 
 /**
- * Markeert een bestelling als betaald en stuurt de downloadmail.
- * Idempotent: een al betaalde bestelling wordt niet nog een keer verwerkt.
+ * Markeert de bestellingen van één betaling als betaald en stuurt daarna
+ * één gecombineerde downloadmail plus één beheerdersmelding.
+ * Idempotent: al betaalde bestellingen worden niet opnieuw verwerkt.
  */
-function order_mark_paid(array $order, string $email): array
+function orders_mark_paid(array $orders, string $email): array
 {
-    if (!in_array($order['status'], ['pending', 'failed'], true)) {
-        return $order;
+    $newlyPaid = false;
+    foreach ($orders as $order) {
+        if (!in_array($order['status'], ['pending', 'failed'], true)) {
+            continue;
+        }
+        $stmt = db()->prepare(
+            'UPDATE orders SET status = ?, email = ?, paid_at = ?, expires_at = ?
+             WHERE id = ? AND status IN (?, ?)'
+        );
+        $stmt->execute([
+            'paid',
+            $email !== '' ? $email : $order['email'],
+            now(),
+            order_expiry_from_now(),
+            $order['id'],
+            'pending',
+            'failed',
+        ]);
+        if ($stmt->rowCount() > 0) {
+            $newlyPaid = true;
+        }
     }
-    $stmt = db()->prepare(
-        'UPDATE orders SET status = ?, email = ?, paid_at = ?, expires_at = ?
-         WHERE id = ? AND status IN (?, ?)'
-    );
-    $stmt->execute([
-        'paid',
-        $email !== '' ? $email : $order['email'],
-        now(),
-        order_expiry_from_now(),
-        $order['id'],
-        'pending',
-        'failed',
-    ]);
-    $order = order_find((int) $order['id']) ?? $order;
-    order_send_links($order);
-    order_notify_admin($order);
-    return $order;
+
+    $fresh = [];
+    foreach ($orders as $order) {
+        $found = order_find((int) $order['id']);
+        if ($found !== null) {
+            $fresh[] = $found;
+        }
+    }
+    if ($newlyPaid) {
+        orders_send_links($fresh);
+        orders_notify_admin($fresh);
+    }
+    return $fresh;
 }
 
 function order_mark_failed(array $order): void
@@ -107,59 +123,113 @@ function order_download_url(array $order, string $format): string
 }
 
 /**
- * Stuurt de e-mail met downloadlinks (één keer; daarna alleen na expliciet
- * opnieuw versturen vanuit het beheer).
+ * Stuurt één e-mail met de downloadlinks van deze bestellingen (één keer;
+ * daarna alleen na expliciet opnieuw versturen vanuit het beheer).
  */
-function order_send_links(array $order): bool
+function orders_send_links(array $orders): bool
 {
-    if ($order['email'] === '' || !empty($order['email_sent_at'])) {
-        return false;
+    $email = '';
+    foreach ($orders as $order) {
+        if ($order['email'] !== '') {
+            $email = $order['email'];
+            break;
+        }
     }
-    $book = $order['book_id'] ? book_find((int) $order['book_id']) : null;
-    if ($book === null) {
+    if ($email === '') {
         return false;
     }
 
+    $unsent = [];
+    foreach ($orders as $order) {
+        if (empty($order['email_sent_at']) && in_array($order['status'], ['paid', 'free'], true)) {
+            $book = $order['book_id'] ? book_find((int) $order['book_id']) : null;
+            if ($book !== null) {
+                $unsent[] = [$order, $book];
+            }
+        }
+    }
+    if ($unsent === []) {
+        return false;
+    }
+
+    $isFree = count($unsent) === 1 && $unsent[0][0]['status'] === 'free';
     $lines = [];
     $lines[] = 'Beste lezer,';
     $lines[] = '';
-    $lines[] = $order['status'] === 'free'
-        ? 'Bedankt voor je interesse in "' . $book['title'] . '". Je kunt de publicatie downloaden via onderstaande link(s):'
-        : 'Bedankt voor je aankoop van "' . $book['title'] . '". Je kunt het boek downloaden via onderstaande link(s):';
-    $lines[] = '';
-    if ($book['pdf_file'] !== '') {
-        $lines[] = 'PDF:  ' . order_download_url($order, 'pdf');
+    if (count($unsent) === 1) {
+        $lines[] = ($isFree
+            ? 'Bedankt voor je interesse in "' . $unsent[0][1]['title'] . '".'
+            : 'Bedankt voor je aankoop van "' . $unsent[0][1]['title'] . '".')
+            . ' Je kunt de publicatie downloaden via onderstaande link(s):';
+    } else {
+        $lines[] = 'Bedankt voor je aankoop. Je kunt de publicaties downloaden via onderstaande links:';
     }
-    if ($book['epub_file'] !== '') {
-        $lines[] = 'EPUB: ' . order_download_url($order, 'epub');
+    foreach ($unsent as [$order, $book]) {
+        $lines[] = '';
+        if (count($unsent) > 1) {
+            $lines[] = $book['title'];
+        }
+        if ($book['pdf_file'] !== '') {
+            $lines[] = 'PDF:  ' . order_download_url($order, 'pdf');
+        }
+        if ($book['epub_file'] !== '') {
+            $lines[] = 'EPUB: ' . order_download_url($order, 'epub');
+        }
     }
     $lines[] = '';
-    $lines[] = 'De link is ' . (int) config('download_days', 90) . ' dagen geldig; de uitgave is voor persoonlijk gebruik.';
+    $lines[] = 'De links zijn ' . (int) config('download_days', 90) . ' dagen geldig; de uitgaven zijn voor persoonlijk gebruik.';
     $lines[] = 'Lukt het downloaden niet? Beantwoord dan deze e-mail.';
     $lines[] = '';
     $lines[] = 'Met vriendelijke groet,';
     $lines[] = (string) config('mail_from_name', 'Lachman Soedamah');
     $lines[] = base_url();
 
-    $ok = send_mail($order['email'], 'Je download: ' . $book['title'], implode("\n", $lines));
+    $subject = count($unsent) === 1 ? 'Je download: ' . $unsent[0][1]['title'] : 'Je downloads';
+    $ok = send_mail($email, $subject, implode("\n", $lines));
     if ($ok) {
         $stmt = db()->prepare('UPDATE orders SET email_sent_at = ? WHERE id = ?');
-        $stmt->execute([now(), $order['id']]);
+        foreach ($unsent as [$order, $book]) {
+            $stmt->execute([now(), $order['id']]);
+        }
     }
     return $ok;
 }
 
-function order_notify_admin(array $order): void
+/** Wrapper voor één losse bestelling (gratis download, opnieuw versturen). */
+function order_send_links(array $order): bool
+{
+    return orders_send_links([$order]);
+}
+
+function orders_notify_admin(array $orders): void
 {
     $admin = (string) config('admin_email', '');
-    if ($admin === '') {
+    if ($admin === '' || $orders === []) {
         return;
     }
+    $total = 0;
+    $itemLines = [];
+    $email = '';
+    foreach ($orders as $order) {
+        $total += (int) $order['amount_cents'];
+        $itemLines[] = '- ' . $order['book_title'] . ' (' . format_price((int) $order['amount_cents']) . ')';
+        if ($email === '' && $order['email'] !== '') {
+            $email = $order['email'];
+        }
+    }
     $body = "Er is een nieuwe bestelling binnengekomen.\n\n"
-        . 'Publicatie: ' . $order['book_title'] . "\n"
-        . 'Bedrag:     ' . format_price((int) $order['amount_cents']) . "\n"
-        . 'Koper:      ' . ($order['email'] !== '' ? $order['email'] : 'onbekend') . "\n"
-        . 'Status:     ' . ($order['status'] === 'free' ? 'gratis download' : 'betaald') . "\n\n"
+        . implode("\n", $itemLines) . "\n\n"
+        . 'Totaal: ' . format_price($total) . "\n"
+        . 'Koper:  ' . ($email !== '' ? $email : 'onbekend') . "\n\n"
         . 'Bekijk alle bestellingen: ' . url('admin/bestellingen.php') . "\n";
-    send_mail($admin, 'Nieuwe bestelling: ' . $order['book_title'], $body);
+    $subject = count($orders) === 1
+        ? 'Nieuwe bestelling: ' . $orders[0]['book_title']
+        : 'Nieuwe bestelling (' . count($orders) . ' publicaties)';
+    send_mail($admin, $subject, $body);
+}
+
+/** Wrapper voor één losse bestelling (gratis download). */
+function order_notify_admin(array $order): void
+{
+    orders_notify_admin([$order]);
 }
