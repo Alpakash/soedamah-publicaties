@@ -20,14 +20,17 @@ if ($book['cover_file'] !== '') {
 $isFree = (int) $book['price_cents'] <= 0;
 include APP_ROOT . '/app/templates/header.php';
 ?>
+<nav class="breadcrumb"><a href="<?= e(url()) ?>">Publicaties</a> <span>/</span> <?= e($book['title']) ?></nav>
 <article class="book-detail">
   <div class="book-detail-cover">
-    <?php if ($book['cover_file'] !== ''): ?>
-      <img class="book-cover" src="<?= e(url('cover.php?b=' . $book['id'])) ?>"
-           alt="Omslag van <?= e($book['title']) ?>">
-    <?php else: ?>
-      <span class="book-cover cover-fallback"><span><?= e($book['title']) ?></span></span>
-    <?php endif; ?>
+    <span class="cover-frame">
+      <?php if ($book['cover_file'] !== ''): ?>
+        <img class="book-cover" src="<?= e(url('cover.php?b=' . $book['id'])) ?>"
+             alt="Omslag van <?= e($book['title']) ?>">
+      <?php else: ?>
+        <span class="book-cover cover-fallback"><span><?= e($book['title']) ?></span></span>
+      <?php endif; ?>
+    </span>
   </div>
   <div class="book-detail-info">
     <h1><?= e($book['title']) ?></h1>
@@ -57,5 +60,16 @@ include APP_ROOT . '/app/templates/header.php';
     </div>
   </div>
 </article>
+
+<aside class="author-mini">
+  <img src="<?= e(url('assets/auteur.jpg')) ?>" alt="Portret van Lachman Soedamah">
+  <div>
+    <p class="author-mini-name">Over de auteur</p>
+    <p><strong>Mr. dr. Lachman Soedamah</strong> is advocaat in Amsterdam en promoveerde op
+       <em>Suriname compleet?</em>, een volkenrechtelijke studie naar de Surinaamse
+       grensgeschillen. Hij schrijft over Suriname, recht en de Hindostaanse gemeenschap.
+       <a href="<?= e(url('#over-de-auteur')) ?>">Lees meer →</a></p>
+  </div>
+</aside>
 <p class="back-link"><a href="<?= e(url()) ?>">← Alle publicaties</a></p>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>

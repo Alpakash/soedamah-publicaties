@@ -1,26 +1,31 @@
 /* Publicaties van Lachman Soedamah — huisstijl */
 
 :root {
-  --paper: #f8f5ef;
+  --paper: #f7f3ec;
+  --paper-deep: #f1eadf;
   --card: #fffdf8;
   --ink: #26221c;
   --muted: #6f675c;
   --line: #e6ddcd;
   --accent: #8a3033;
   --accent-dark: #6e2427;
+  --accent-soft: #f3e2e0;
   --success-bg: #e8f2e4;
   --success-ink: #2f5c2a;
   --error-bg: #f9e6e4;
   --error-ink: #8a2c25;
   --serif: Georgia, 'Times New Roman', serif;
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --shadow-book: 0 18px 40px -18px rgba(38, 34, 28, 0.55);
 }
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
-  background: var(--paper);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 1.05rem;
@@ -32,12 +37,12 @@ body {
 
 .wrap {
   width: 100%;
-  max-width: 1040px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 1.25rem;
 }
 
-main.wrap { flex: 1; padding-top: 2rem; padding-bottom: 3rem; }
+main.wrap { flex: 1; padding-top: 1rem; padding-bottom: 4rem; }
 
 h1, h2, h3 {
   font-family: var(--serif);
@@ -57,6 +62,7 @@ a:hover { color: var(--accent-dark); }
 
 .site-header {
   background: var(--card);
+  border-top: 4px solid var(--accent);
   border-bottom: 1px solid var(--line);
 }
 
@@ -66,26 +72,26 @@ a:hover { color: var(--accent-dark); }
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem 1.5rem;
-  padding-top: 1.1rem;
-  padding-bottom: 1.1rem;
+  padding-top: 1.15rem;
+  padding-bottom: 1.15rem;
 }
 
 .brand { text-decoration: none; color: var(--ink); }
 .brand-name {
   display: block;
   font-family: var(--serif);
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   letter-spacing: 0.01em;
 }
 .brand-sub {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   color: var(--accent);
 }
 
-.site-nav { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+.site-nav { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
 .site-nav a {
   text-decoration: none;
   color: var(--ink);
@@ -98,29 +104,110 @@ a:hover { color: var(--accent-dark); }
 .site-footer {
   border-top: 1px solid var(--line);
   background: var(--card);
-  padding: 1.5rem 0;
-  font-size: 0.92rem;
+  padding: 2.25rem 0 1.25rem;
+  font-size: 0.93rem;
   color: var(--muted);
 }
-.site-footer p { margin: 0.2rem 0; }
-.footer-note { font-size: 0.85rem; }
-
-/* ---------- Overzicht ---------- */
-
-.intro { max-width: 640px; margin-bottom: 2.25rem; }
-.intro p { color: var(--muted); margin: 0; }
-
-.book-grid {
+.footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
-  gap: 1.75rem;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  gap: 2rem;
+  padding-bottom: 1.25rem;
+}
+.footer-grid p { margin: 0.2rem 0; }
+.footer-brand {
+  font-family: var(--serif);
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+.footer-heading {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+.footer-bottom {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  font-size: 0.85rem;
+}
+.footer-bottom p { margin: 0; }
+
+/* ---------- Hero ---------- */
+
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 1rem;
 }
 
-.book-card {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: var(--ink);
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 3rem 0 3.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 3rem;
+}
+
+.hero-text h1 {
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  margin: 0 0 1.1rem;
+}
+
+.hero-lead {
+  font-size: 1.18rem;
+  color: var(--muted);
+  max-width: 34em;
+  margin: 0 0 1.75rem;
+}
+
+.hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; margin: 0; }
+
+.hero-visual { display: flex; flex-direction: column; align-items: center; }
+
+.hero-book { text-decoration: none; color: var(--ink); text-align: center; }
+.hero-book .cover-frame { width: min(300px, 70vw); }
+.hero-book-caption { display: block; margin-top: 1.1rem; }
+.hero-book-caption strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+}
+.hero-book-caption span { color: var(--muted); font-size: 0.95rem; }
+
+.portrait-frame { width: min(340px, 75vw); }
+.portrait {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-book);
+  display: block;
+}
+
+/* ---------- Omslagen & badges ---------- */
+
+.cover-frame { position: relative; display: block; }
+
+.badge-floating {
+  position: absolute;
+  top: 0.8rem;
+  left: -0.5rem;
+  z-index: 1;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.8rem;
+  border-radius: 3px;
+  box-shadow: 0 4px 10px -4px rgba(38, 34, 28, 0.5);
 }
 
 .book-cover {
@@ -130,12 +217,14 @@ a:hover { color: var(--accent-dark); }
   border-radius: 6px;
   background: var(--card);
   border: 1px solid var(--line);
-  box-shadow: 0 10px 24px -14px rgba(38, 34, 28, 0.55);
+  box-shadow: var(--shadow-book);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: block;
 }
-.book-card:hover .book-cover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 30px -14px rgba(38, 34, 28, 0.6);
+.book-card:hover .book-cover,
+.hero-book:hover .book-cover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 44px -18px rgba(38, 34, 28, 0.6);
 }
 
 .cover-fallback {
@@ -151,7 +240,38 @@ a:hover { color: var(--accent-dark); }
   line-height: 1.35;
 }
 
-.book-card-body { padding: 0.85rem 0.15rem 0; display: block; }
+/* ---------- Secties & overzicht ---------- */
+
+.section-title {
+  font-size: 1.6rem;
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.shop-section { margin-bottom: 3.5rem; }
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 2rem;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.book-card-body { padding: 0.9rem 0.15rem 0; display: block; }
 .book-title { display: block; font-family: var(--serif); font-size: 1.12rem; line-height: 1.3; }
 .book-subtitle { display: block; color: var(--muted); font-size: 0.92rem; margin-top: 0.15rem; }
 .book-meta {
@@ -172,22 +292,113 @@ a:hover { color: var(--accent-dark); }
 .empty-state {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 2.5rem 2rem;
   max-width: 640px;
   margin: 1rem auto;
   text-align: center;
 }
 
-/* ---------- Boekpagina ---------- */
+/* ---------- Vertrouwensblok ---------- */
 
-.book-detail {
+.trust-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+}
+.trust-item {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.4rem 1.3rem 1.2rem;
+}
+.trust-item svg {
+  width: 30px;
+  height: 30px;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+.trust-item h3 { font-family: var(--sans); font-size: 1rem; margin: 0 0 0.35rem; }
+.trust-item p { margin: 0; font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+/* ---------- Over de auteur ---------- */
+
+.author-band {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 2.5rem;
   align-items: start;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 2.5rem;
+  scroll-margin-top: 2rem;
 }
-.book-detail-cover .book-cover { max-width: 280px; }
+.author-photo img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-book);
+  display: block;
+}
+.author-text .section-title { margin-bottom: 1rem; }
+.author-text p { margin: 0 0 1rem; }
+
+.author-quote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.4rem;
+  border-left: 3px solid var(--accent);
+}
+.author-quote p {
+  font-family: var(--serif);
+  font-size: 1.22rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+}
+.author-quote cite { color: var(--muted); font-style: normal; font-size: 0.92rem; }
+
+.author-mini {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-top: 3rem;
+}
+.author-mini img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  display: block;
+}
+.author-mini p { margin: 0; }
+.author-mini-name {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- Boekpagina ---------- */
+
+.breadcrumb { margin: 0.5rem 0 1.75rem; font-size: 0.92rem; color: var(--muted); }
+.breadcrumb a { text-decoration: none; }
+.breadcrumb span { margin: 0 0.4rem; }
+
+.book-detail {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
 .book-detail-subtitle {
   font-family: var(--serif);
   font-size: 1.2rem;
@@ -199,24 +410,24 @@ a:hover { color: var(--accent-dark); }
 .buy-box {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 1.25rem 1.5rem;
+  border-radius: 10px;
+  padding: 1.4rem 1.6rem;
   margin-bottom: 1.75rem;
 }
 .buy-price {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--accent);
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.9rem;
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
-.buy-note { color: var(--muted); font-size: 0.9rem; margin: 0.75rem 0 0; }
+.buy-note { color: var(--muted); font-size: 0.9rem; margin: 0.8rem 0 0; }
 
 .book-description p { margin: 0 0 1rem; }
-.back-link { margin-top: 2.5rem; }
-.back-link a, .download-buttons + p a { text-decoration: none; }
+.back-link { margin-top: 2rem; }
+.back-link a { text-decoration: none; }
 
 /* ---------- Knoppen ---------- */
 
@@ -231,6 +442,7 @@ a:hover { color: var(--accent-dark); }
   cursor: pointer;
   line-height: 1.4;
 }
+.btn-large { padding: 0.85rem 1.8rem; font-size: 1.05rem; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-dark); color: #fff; }
 .btn-secondary {
@@ -239,6 +451,12 @@ a:hover { color: var(--accent-dark); }
   border-color: var(--line);
 }
 .btn-secondary:hover { border-color: var(--muted); color: var(--ink); }
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-ghost:hover { background: var(--accent-soft); color: var(--accent-dark); }
 .btn-danger { background: var(--error-ink); color: #fff; }
 .btn-danger:hover { background: #6d211b; color: #fff; }
 .btn-danger-link {
@@ -269,7 +487,7 @@ a:hover { color: var(--accent-dark); }
 .thanks {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 2.25rem 2rem;
   max-width: 640px;
   margin: 1rem auto;
@@ -404,9 +622,21 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 
 /* ---------- Mobiel ---------- */
 
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; gap: 2.25rem; padding: 2rem 0 2.5rem; }
+  .hero-visual { order: -1; }
+  .trust-row { grid-template-columns: 1fr 1fr; }
+  .author-band { grid-template-columns: 1fr; padding: 1.75rem; }
+  .author-photo { max-width: 260px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+
 @media (max-width: 720px) {
+  .book-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
   .book-detail { grid-template-columns: 1fr; }
   .book-detail-cover { max-width: 240px; }
   .form-row { grid-template-columns: 1fr; }
   h1 { font-size: 1.6rem; }
+  .trust-row { grid-template-columns: 1fr; }
+  .author-mini { grid-template-columns: 80px 1fr; padding: 1.1rem; }
 }

@@ -35,8 +35,9 @@ $pageTitle = $pageTitle ?? 'Publicaties';
       <span class="brand-sub">Publicaties</span>
     </a>
     <nav class="site-nav">
-      <a href="<?= e(url()) ?>">Publicaties</a>
-      <a href="https://soedamah.nl" rel="noopener">Over de auteur</a>
+      <a href="<?= e(url('#publicaties')) ?>">Boeken</a>
+      <a href="<?= e(url('#over-de-auteur')) ?>">Over de auteur</a>
+      <a href="https://soedamah.nl/publicaties" rel="noopener">Artikelen</a>
     </nav>
   </div>
 </header>
