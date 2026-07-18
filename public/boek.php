@@ -23,14 +23,18 @@ include APP_ROOT . '/app/templates/header.php';
 <nav class="breadcrumb"><a href="<?= e(url()) ?>">Publicaties</a> <span>/</span> <?= e($book['title']) ?></nav>
 <article class="book-detail">
   <div class="book-detail-cover">
-    <span class="cover-frame">
-      <?php if ($book['cover_file'] !== ''): ?>
-        <img class="book-cover" src="<?= e(url('cover.php?b=' . $book['id'])) ?>"
-             alt="Omslag van <?= e($book['title']) ?>">
-      <?php else: ?>
+    <?php if ($book['cover_file'] !== ''): ?>
+      <a class="cover-zoom" href="#omslag" aria-label="Bekijk de omslag groter">
+        <span class="cover-frame">
+          <img class="book-cover" src="<?= e(url('cover.php?b=' . $book['id'])) ?>"
+               alt="Omslag van <?= e($book['title']) ?>">
+        </span>
+      </a>
+    <?php else: ?>
+      <span class="cover-frame">
         <span class="book-cover cover-fallback"><span><?= e($book['title']) ?></span></span>
-      <?php endif; ?>
-    </span>
+      </span>
+    <?php endif; ?>
   </div>
   <div class="book-detail-info">
     <h1><?= e($book['title']) ?></h1>
@@ -71,4 +75,10 @@ include APP_ROOT . '/app/templates/header.php';
   </div>
 </aside>
 <p class="back-link"><a href="<?= e(url()) ?>">← Alle publicaties</a></p>
+
+<?php if ($book['cover_file'] !== ''): ?>
+<a class="lightbox" id="omslag" href="#!" aria-label="Sluit de vergrote omslag">
+  <img src="<?= e(url('cover.php?b=' . $book['id'])) ?>" alt="Omslag van <?= e($book['title']) ?>">
+</a>
+<?php endif; ?>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>

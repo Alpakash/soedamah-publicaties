@@ -220,9 +220,34 @@ a:hover { color: var(--accent-dark); }
   display: block;
 }
 .book-card:hover .book-cover,
-.hero-book:hover .book-cover {
+.hero-book:hover .book-cover,
+.cover-zoom:hover .book-cover {
   transform: translateY(-5px);
   box-shadow: 0 24px 44px -18px rgba(38, 34, 28, 0.6);
+}
+
+/* Klikbare omslag op de boekpagina, met CSS-lightbox (geen JavaScript nodig) */
+.cover-zoom { display: block; cursor: zoom-in; }
+
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(30, 26, 21, 0.9);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+.lightbox:target { display: flex; }
+.lightbox img {
+  max-width: min(92vw, 680px);
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
 }
 
 .cover-fallback {
