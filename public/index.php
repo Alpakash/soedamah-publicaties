@@ -109,16 +109,16 @@ include APP_ROOT . '/app/templates/header.php';
   </div>
   <div class="author-text">
     <h2 class="section-title">Over de auteur</h2>
-    <p><strong>Mr. dr. Lachman Soedamah</strong> studeerde rechten aan de Anton de Kom
-       Universiteit van Suriname en is sinds 1988 advocaat in Amsterdam. Wat begon bij de
-       Rechtswinkel Migranten en in de Bijlmer groeide uit tot
-       <a href="https://soedamah.nl">Soedamah Advocaten</a> — een kantoor dat al meer dan
-       35 jaar opkomt voor mensen die hun recht zoeken.</p>
-    <p>In 2014 promoveerde hij aan de Open Universiteit op <em>Suriname compleet?</em>,
-       een volkenrechtelijke studie naar de grensgeschillen van Suriname met Guyana en
-       Frans-Guyana. Zijn werk beweegt zich sindsdien op het snijvlak van recht,
-       geschiedenis en samenleving: de staatkundige toekomst van Suriname, de Hindostaanse
-       emancipatie en de betekenis van integer leiderschap.</p>
+    <p><strong>Mr. dr. Lachman Soedamah</strong> is advocaat, auteur en onderzoeker. Sinds 1988
+       is hij werkzaam als advocaat in Amsterdam en richtte hij in 1999
+       <a href="https://soedamah.nl">Soedamah Advocaten</a> op. Daarnaast promoveerde hij aan
+       de Open Universiteit op een studie naar de Surinaamse grensgeschillen vanuit het
+       internationaal recht.</p>
+    <p>Naast zijn juridische praktijk zet hij zich al decennialang in voor maatschappelijke
+       vraagstukken op het gebied van recht, migratie, democratie en de Surinaamse diaspora.
+       Hij publiceert regelmatig over staatsrechtelijke en maatschappelijke thema's en draagt
+       actief bij aan het publieke debat over de toekomst van Suriname. Voor zijn langdurige
+       maatschappelijke verdiensten is hij zowel door Suriname als door Nederland onderscheiden.</p>
     <blockquote class="author-quote">
       <p>„Leiderschap wordt uiteindelijk niet beoordeeld op afkomst, maar op integriteit.
          Niet op retoriek, maar op resultaten."</p>
