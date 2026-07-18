@@ -50,7 +50,7 @@ include APP_ROOT . '/app/templates/header.php';
         <a class="btn btn-primary" href="<?= e(order_download_url($order, 'epub')) ?>">Download EPUB</a>
       <?php endif; ?>
     </p>
-    <p>De links zijn ook gestuurd naar <strong><?= e($order['email']) ?></strong>.</p>
+    <p>De links zijn ook gemaild naar <strong><?= e($order['email']) ?></strong>.</p>
     <p><a href="<?= e(url()) ?>">← Terug naar alle publicaties</a></p>
   </div>
 <?php else: ?>

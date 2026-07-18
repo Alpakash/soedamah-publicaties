@@ -50,8 +50,7 @@ include APP_ROOT . '/app/templates/header.php';
         <p class="buy-note">Je ontvangt de downloadlink direct en per e-mail.</p>
       <?php else: ?>
         <a class="btn btn-primary" href="<?= e(url('afrekenen.php?b=' . $book['slug'])) ?>">Nu kopen</a>
-        <p class="buy-note">Veilig betalen via iDEAL of creditcard (Stripe).<br>
-           Direct downloaden na betaling; je ontvangt de link ook per e-mail.</p>
+        <p class="buy-note">Betaal met iDEAL of creditcard — direct downloaden na betaling.</p>
       <?php endif; ?>
     </div>
 

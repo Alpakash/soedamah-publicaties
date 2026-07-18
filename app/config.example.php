@@ -17,7 +17,7 @@ return [
     'stripe_webhook_secret' => '',
 
     // Afzender van de e-mails met downloadlinks.
-    'mail_from' => 'publicaties@soedamah.nl',
+    'mail_from' => 'soedamah@soedamah.nl',
     'mail_from_name' => 'Lachman Soedamah',
 
     // Dit adres ontvangt een melding bij elke bestelling (leeg = geen meldingen).

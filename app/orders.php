@@ -134,12 +134,8 @@ function order_send_links(array $order): bool
         $lines[] = 'EPUB: ' . order_download_url($order, 'epub');
     }
     $lines[] = '';
-    $lines[] = 'De link is ' . (int) config('download_days', 90) . ' dagen geldig en per bestand maximaal '
-        . (int) config('download_max', 5) . ' keer te gebruiken.';
-    $lines[] = 'Lukt het downloaden niet? Beantwoord dan deze e-mail, dan helpen we je verder.';
-    $lines[] = '';
-    $lines[] = 'Deze uitgave is bedoeld voor persoonlijk gebruik. Deel het bestand niet verder;';
-    $lines[] = 'zo blijft het voor de auteur mogelijk om nieuwe publicaties uit te brengen.';
+    $lines[] = 'De link is ' . (int) config('download_days', 90) . ' dagen geldig; de uitgave is voor persoonlijk gebruik.';
+    $lines[] = 'Lukt het downloaden niet? Beantwoord dan deze e-mail.';
     $lines[] = '';
     $lines[] = 'Met vriendelijke groet,';
     $lines[] = (string) config('mail_from_name', 'Lachman Soedamah');

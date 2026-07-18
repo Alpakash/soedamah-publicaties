@@ -62,12 +62,10 @@ include APP_ROOT . '/app/templates/header.php';
         <?php endif; ?>
       </p>
       <?php if ($order['email'] !== ''): ?>
-        <p>De downloadlinks zijn ook gestuurd naar <strong><?= e($order['email']) ?></strong>
-           (controleer eventueel je spamfolder).</p>
+        <p>De links zijn ook gemaild naar <strong><?= e($order['email']) ?></strong>.</p>
       <?php endif; ?>
-      <p class="muted">De links zijn <?= (int) config('download_days', 90) ?> dagen geldig en per bestand
-         maximaal <?= (int) config('download_max', 5) ?> keer te gebruiken.
-         Deze uitgave is voor persoonlijk gebruik — deel het bestand niet verder.</p>
+      <p class="muted">De links zijn <?= (int) config('download_days', 90) ?> dagen geldig;
+         deze uitgave is voor persoonlijk gebruik.</p>
     <?php else: ?>
       <p>Je betaling is ontvangen. De downloadlinks zijn per e-mail verstuurd.</p>
     <?php endif; ?>
