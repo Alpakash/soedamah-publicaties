@@ -59,6 +59,17 @@ function url(string $path = ''): string
     return base_url() . '/' . ltrim($path, '/');
 }
 
+/**
+ * URL voor een statisch bestand, met de wijzigingsdatum als versienummer
+ * zodat browsers na een update nooit een oude versie uit hun cache tonen.
+ */
+function asset_url(string $path): string
+{
+    $file = APP_ROOT . '/public/' . ltrim($path, '/');
+    $version = is_file($file) ? (string) filemtime($file) : '1';
+    return url($path) . '?v=' . $version;
+}
+
 if (PHP_SAPI !== 'cli' && !headers_sent()) {
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');

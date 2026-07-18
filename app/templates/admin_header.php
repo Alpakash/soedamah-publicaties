@@ -12,7 +12,7 @@ $pageTitle = $pageTitle ?? 'Beheer';
 <title><?= e($pageTitle) ?> · Beheer</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="<?= e(url('assets/style.css')) ?>">
+<link rel="stylesheet" href="<?= e(asset_url('assets/style.css')) ?>">
 </head>
 <body class="admin">
 <header class="site-header">
