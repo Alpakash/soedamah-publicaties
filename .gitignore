@@ -6,4 +6,8 @@
 !/data/.htaccess
 !/data/.gitkeep
 
+# Geüploade artikelafbeeldingen (worden op de server aangemaakt)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 .DS_Store

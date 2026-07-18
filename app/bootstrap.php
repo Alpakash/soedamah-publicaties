@@ -14,6 +14,8 @@ date_default_timezone_set('Europe/Amsterdam');
 require __DIR__ . '/helpers.php';
 require __DIR__ . '/db.php';
 require __DIR__ . '/books.php';
+require __DIR__ . '/articles.php';
+require __DIR__ . '/html_sanitizer.php';
 require __DIR__ . '/cart.php';
 require __DIR__ . '/stripe.php';
 require __DIR__ . '/mail.php';
@@ -75,10 +77,20 @@ if (PHP_SAPI !== 'cli' && !headers_sent()) {
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
-    header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; base-uri 'self'; frame-ancestors 'self'");
     // Elke pagina toont mogelijk persoonlijke staat (winkelmandje, sessie) via een cookie,
     // dus nooit laten cachen door de browser of een cachende reverse proxy (bijv. Plesk/nginx).
     // Pagina's die wél cachebaar zijn (cover.php) overschrijven dit expliciet met hun eigen header.
     header('Cache-Control: no-store, no-cache, must-revalidate');
     header('Pragma: no-cache');
+    // frame-src staat alleen de privacyvriendelijke video-embeds toe die de artikel-editor
+    // produceert (zie app/html_sanitizer.php voor de bijbehorende whitelist bij het opslaan).
+    header("Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com; base-uri 'self'; frame-ancestors 'self'");
+}
+
+/** Zorgt dat een map bestaat, voor het eerste gebruik van een uploadlocatie. */
+function ensure_dir(string $path): void
+{
+    if (!is_dir($path)) {
+        @mkdir($path, 0755, true);
+    }
 }

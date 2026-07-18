@@ -452,6 +452,72 @@ a:hover { color: var(--accent-dark); }
 }
 .buy-note { color: var(--muted); font-size: 0.9rem; margin: 0.8rem 0 0; }
 
+/* ---------- Artikelen ---------- */
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.article-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px -16px rgba(38, 34, 28, 0.5);
+}
+.article-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.article-card-body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.article-date { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.article-title { font-family: var(--serif); font-size: 1.2rem; line-height: 1.35; }
+.article-excerpt { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+
+.article-detail { max-width: 720px; margin: 0 auto; }
+.article-detail h1 { margin: 0.25rem 0 1.5rem; }
+.article-hero {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  margin-bottom: 1.75rem;
+  display: block;
+}
+
+.article-body { font-size: 1.08rem; line-height: 1.75; }
+.article-body p { margin: 0 0 1.25rem; }
+.article-body h2 { font-size: 1.5rem; margin: 2rem 0 1rem; }
+.article-body h3 { font-size: 1.2rem; margin: 1.75rem 0 0.85rem; }
+.article-body ul, .article-body ol { margin: 0 0 1.25rem; padding-left: 1.4rem; }
+.article-body li { margin-bottom: 0.4rem; }
+.article-body blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.4rem;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+  font-style: italic;
+}
+.article-body img { max-width: 100%; height: auto; border-radius: 8px; margin: 0.5rem 0 1.5rem; display: block; }
+.article-body iframe {
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 0.5rem 0 1.5rem;
+  display: block;
+}
+.article-body a { text-decoration: underline; }
+
+.article-detail + .author-mini { max-width: 720px; margin-left: auto; margin-right: auto; }
+
 /* ---------- Winkelmandje ---------- */
 
 .cart-page { max-width: 680px; }
@@ -698,6 +764,56 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 }
 .admin-toolbar h1 { margin: 0; }
 .stats-line { color: var(--muted); margin-top: 0; }
+
+/* ---------- Tekstverwerker (artikelen) ---------- */
+
+.rich-editor {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  margin-top: 0.3rem;
+}
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+.editor-toolbar button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.editor-toolbar button:hover { background: var(--paper); border-color: var(--line); }
+.editor-sep { width: 1px; height: 22px; background: var(--line); margin: 0 0.3rem; }
+
+.editor-area {
+  min-height: 320px;
+  padding: 1rem 1.25rem;
+  line-height: 1.7;
+  outline: none;
+}
+.editor-area:focus { background: #fffef9; }
+.editor-area p { margin: 0 0 1rem; }
+.editor-area h2 { font-size: 1.35rem; margin: 1.25rem 0 0.75rem; }
+.editor-area h3 { font-size: 1.1rem; margin: 1rem 0 0.6rem; }
+.editor-area blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--muted);
+}
+.editor-area img { max-width: 100%; border-radius: 6px; }
+.editor-area iframe { max-width: 100%; }
 
 .table-scroll { overflow-x: auto; }
 

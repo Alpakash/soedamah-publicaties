@@ -23,6 +23,7 @@ $pageTitle = $pageTitle ?? 'Beheer';
     </a>
     <nav class="site-nav">
       <a href="<?= e(url('admin/')) ?>">Boeken</a>
+      <a href="<?= e(url('admin/artikelen.php')) ?>">Artikelen</a>
       <a href="<?= e(url('admin/bestellingen.php')) ?>">Bestellingen</a>
       <a href="<?= e(url()) ?>">Shop bekijken</a>
       <form method="post" action="<?= e(url('admin/logout.php')) ?>" class="inline-form">

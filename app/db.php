@@ -123,6 +123,21 @@ SQL);
     if (!in_array('name', $orderColumns, true)) {
         $pdo->exec("ALTER TABLE orders ADD COLUMN name TEXT NOT NULL DEFAULT ''");
     }
+
+    $pdo->exec(<<<SQL
+CREATE TABLE IF NOT EXISTS articles (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug         TEXT UNIQUE NOT NULL,
+    title        TEXT NOT NULL,
+    excerpt      TEXT NOT NULL DEFAULT '',
+    body_html    TEXT NOT NULL DEFAULT '',
+    cover_file   TEXT NOT NULL DEFAULT '',
+    published    INTEGER NOT NULL DEFAULT 0,
+    article_date TEXT NOT NULL,
+    created_at   TEXT NOT NULL,
+    updated_at   TEXT NOT NULL
+)
+SQL);
 }
 
 function setting_get(string $name, ?string $default = null): ?string
