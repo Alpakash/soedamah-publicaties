@@ -103,29 +103,6 @@ include APP_ROOT . '/app/templates/header.php';
   <?php endif; ?>
 </section>
 
-<section class="trust-row">
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
-    <h3>Direct downloaden</h3>
-    <p>Je bestanden staan na betaling meteen klaar, ook in je mailbox.</p>
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.2 7 10 4-1.8 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-    <h3>Veilig betalen</h3>
-    <p>Met iDEAL of creditcard, via Stripe.</p>
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="13" height="16" rx="2"/><path d="M19 7h1a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2h-6"/><path d="M7 9h5M7 13h5"/></svg>
-    <h3>Voor elk apparaat</h3>
-    <p>PDF voor computer en tablet, EPUB voor je e-reader.</p>
-  </div>
-  <div class="trust-item">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.6-9.5-9A5.4 5.4 0 0 1 12 6.5 5.4 5.4 0 0 1 21.5 12C19 16.4 12 21 12 21Z"/></svg>
-    <h3>Rechtstreeks van de auteur</h3>
-    <p>Zonder tussenhandel — je aankoop steunt zijn schrijfwerk direct.</p>
-  </div>
-</section>
-
 <section id="over-de-auteur" class="author-band">
   <div class="author-photo">
     <img src="<?= e(url('assets/auteur.jpg')) ?>" alt="Portret van mr. dr. Lachman Soedamah">

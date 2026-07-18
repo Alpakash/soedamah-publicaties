@@ -299,29 +299,6 @@ a:hover { color: var(--accent-dark); }
   text-align: center;
 }
 
-/* ---------- Vertrouwensblok ---------- */
-
-.trust-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 3.5rem;
-}
-.trust-item {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 1.4rem 1.3rem 1.2rem;
-}
-.trust-item svg {
-  width: 30px;
-  height: 30px;
-  color: var(--accent);
-  margin-bottom: 0.6rem;
-}
-.trust-item h3 { font-family: var(--sans); font-size: 1rem; margin: 0 0 0.35rem; }
-.trust-item p { margin: 0; font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
-
 /* ---------- Over de auteur ---------- */
 
 .author-band {
@@ -625,7 +602,6 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; gap: 2.25rem; padding: 2rem 0 2.5rem; }
   .hero-visual { order: -1; }
-  .trust-row { grid-template-columns: 1fr 1fr; }
   .author-band { grid-template-columns: 1fr; padding: 1.75rem; }
   .author-photo { max-width: 260px; }
   .footer-grid { grid-template-columns: 1fr; gap: 1.25rem; }
@@ -637,6 +613,5 @@ legend { font-weight: 700; padding: 0 0.5rem; }
   .book-detail-cover { max-width: 240px; }
   .form-row { grid-template-columns: 1fr; }
   h1 { font-size: 1.6rem; }
-  .trust-row { grid-template-columns: 1fr; }
   .author-mini { grid-template-columns: 80px 1fr; padding: 1.1rem; }
 }

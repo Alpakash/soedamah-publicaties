@@ -14,8 +14,7 @@
     </div>
     <div>
       <p class="footer-heading">Bestellen</p>
-      <p>Veilig betalen met iDEAL of creditcard.<br>
-         Downloadlink direct na betaling, ook per e-mail.</p>
+      <p>Betalen via iDEAL of creditcard — downloadlink direct na betaling, ook per e-mail.</p>
     </div>
   </div>
   <div class="wrap footer-bottom">
