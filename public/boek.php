@@ -54,12 +54,14 @@ include APP_ROOT . '/app/templates/header.php';
         <p class="buy-note">Je ontvangt de downloadlink direct en per e-mail.</p>
       <?php else: ?>
         <?php if (in_array((int) $book['id'], cart_ids(), true)): ?>
-          <a class="btn btn-primary" href="<?= e(url('mandje.php')) ?>">Naar het mandje →</a>
+          <a class="btn btn-primary btn-with-icon" href="<?= e(url('mandje.php')) ?>">
+            <?= cart_icon_svg() ?> Bekijk mandje
+          </a>
         <?php else: ?>
           <form method="post" action="<?= e(url('mandje.php')) ?>" class="inline-form">
             <input type="hidden" name="action" value="add">
             <input type="hidden" name="id" value="<?= (int) $book['id'] ?>">
-            <button type="submit" class="btn btn-primary">In winkelmandje</button>
+            <button type="submit" class="btn btn-primary">Kopen</button>
           </form>
         <?php endif; ?>
         <p class="buy-note">Betaal met iDEAL of creditcard — direct downloaden na betaling.</p>

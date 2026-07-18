@@ -39,9 +39,11 @@ $pageTitle = $pageTitle ?? 'Publicaties';
       <a href="<?= e(url('#over-de-auteur')) ?>">Over de auteur</a>
       <a href="https://soedamah.nl/publicaties" rel="noopener">Artikelen</a>
       <?php $cartCount = function_exists('cart_ids') ? count(cart_ids()) : 0; ?>
-      <?php if ($cartCount > 0): ?>
-        <a class="nav-cart" href="<?= e(url('mandje.php')) ?>">Mandje (<?= $cartCount ?>)</a>
-      <?php endif; ?>
+      <a class="nav-cart" href="<?= e(url('mandje.php')) ?>"
+         aria-label="Winkelmandje<?= $cartCount > 0 ? ' (' . $cartCount . ' publicaties)' : '' ?>">
+        <?= cart_icon_svg() ?>
+        <?php if ($cartCount > 0): ?><span class="nav-cart-badge"><?= $cartCount ?></span><?php endif; ?>
+      </a>
     </nav>
   </div>
 </header>

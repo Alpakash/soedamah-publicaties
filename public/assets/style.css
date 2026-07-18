@@ -100,7 +100,32 @@ a:hover { color: var(--accent-dark); }
   padding-bottom: 2px;
 }
 .site-nav a:hover { border-bottom-color: var(--accent); color: var(--ink); }
-.site-nav .nav-cart { color: var(--accent); font-weight: 700; }
+.site-nav .nav-cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.site-nav .nav-cart:hover { color: var(--accent); }
+.site-nav .nav-cart .icon-cart { width: 22px; height: 22px; display: block; }
+.nav-cart-badge {
+  position: absolute;
+  top: -7px;
+  right: -9px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
 
 .site-footer {
   border-top: 1px solid var(--line);
@@ -545,6 +570,8 @@ a:hover { color: var(--accent-dark); }
   text-decoration: underline;
 }
 .btn-small { padding: 0.3rem 0.75rem; font-size: 0.88rem; }
+.btn-with-icon { display: inline-flex; align-items: center; gap: 0.5rem; }
+.btn-with-icon .icon-cart { width: 18px; height: 18px; flex-shrink: 0; }
 
 .link-button {
   background: none;
