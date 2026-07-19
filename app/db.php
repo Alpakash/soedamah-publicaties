@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS books (
     published   INTEGER NOT NULL DEFAULT 0,
     in_stock    INTEGER NOT NULL DEFAULT 1,
     is_physical INTEGER NOT NULL DEFAULT 0,
+    hide_new_badge INTEGER NOT NULL DEFAULT 0,
     sort_order  INTEGER NOT NULL DEFAULT 0,
     created_at  TEXT NOT NULL
 )
@@ -137,6 +138,9 @@ SQL);
     }
     if (!in_array('is_physical', $bookColumns, true)) {
         $pdo->exec('ALTER TABLE books ADD COLUMN is_physical INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('hide_new_badge', $bookColumns, true)) {
+        $pdo->exec('ALTER TABLE books ADD COLUMN hide_new_badge INTEGER NOT NULL DEFAULT 0');
     }
 
     $pdo->exec(<<<SQL

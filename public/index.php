@@ -3,10 +3,6 @@ require __DIR__ . '/../app/bootstrap.php';
 
 $books = books_published();
 $featured = $books[0] ?? null;
-$isNewBook = static function (array $book): bool {
-    return book_has_deliverable($book)
-        && (strtotime($book['created_at'] . ' UTC') > time() - 45 * 86400);
-};
 
 $pageTitle = 'Boeken en essays van Lachman Soedamah';
 $metaDescription = 'Boeken en essays van mr. dr. Lachman Soedamah over Suriname, het volkenrecht en de Hindostaanse gemeenschap. Direct te downloaden als PDF of EPUB.';
@@ -37,7 +33,7 @@ include APP_ROOT . '/app/templates/header.php';
             <span class="badge-floating">Nog niet beschikbaar</span>
           <?php elseif (!book_orderable($featured)): ?>
             <span class="badge-floating">Niet op voorraad</span>
-          <?php elseif ($isNewBook($featured)): ?>
+          <?php elseif (book_is_new($featured)): ?>
             <span class="badge-floating">Nieuw</span>
           <?php endif; ?>
           <?php if ($featured['cover_file'] !== ''): ?>
@@ -81,7 +77,7 @@ include APP_ROOT . '/app/templates/header.php';
               <span class="badge-floating">Nog niet beschikbaar</span>
             <?php elseif (!book_orderable($book)): ?>
               <span class="badge-floating">Niet op voorraad</span>
-            <?php elseif ($isNewBook($book)): ?>
+            <?php elseif (book_is_new($book)): ?>
               <span class="badge-floating">Nieuw</span>
             <?php endif; ?>
             <?php if ($book['cover_file'] !== ''): ?>

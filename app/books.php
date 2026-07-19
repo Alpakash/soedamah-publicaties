@@ -67,6 +67,15 @@ function book_formats_label(array $book): string
     return $formats ? implode(' · ', $formats) : 'Nog niet beschikbaar';
 }
 
+/** Toont het boek de "Nieuw"-badge? Uitgezet als de beheerder dat expliciet heeft uitgevinkt
+ *  (bijv. een oudere titel die nu pas aan de shop is toegevoegd). */
+function book_is_new(array $book): bool
+{
+    return book_has_deliverable($book)
+        && (int) ($book['hide_new_badge'] ?? 0) === 0
+        && (strtotime($book['created_at'] . ' UTC') > time() - 45 * 86400);
+}
+
 function book_unique_slug(string $title, int $excludeId = 0): string
 {
     $base = slugify($title);

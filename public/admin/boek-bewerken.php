@@ -101,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $published   = !empty($_POST['published']) ? 1 : 0;
         $inStock     = !empty($_POST['in_stock']) ? 1 : 0;
         $isPhysical  = !empty($_POST['is_physical']) ? 1 : 0;
+        $hideNewBadge = !empty($_POST['hide_new_badge']) ? 1 : 0;
         $sortOrder   = (int) ($_POST['sort_order'] ?? 0);
 
         if ($title === '') {
@@ -114,20 +115,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             if ($book === null) {
                 $stmt = db()->prepare(
-                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, is_physical, sort_order, created_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, is_physical, hide_new_badge, sort_order, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
                     book_unique_slug($title),
-                    $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $sortOrder, now(),
+                    $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, now(),
                 ]);
                 $book = book_find((int) db()->lastInsertId());
             } else {
                 $stmt = db()->prepare(
-                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, sort_order = ?
+                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, hide_new_badge = ?, sort_order = ?
                      WHERE id = ?'
                 );
-                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $sortOrder, $book['id']]);
+                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, $book['id']]);
                 $book = book_find((int) $book['id']);
             }
 
@@ -179,6 +180,9 @@ $inStockChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
 $isPhysicalChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
     ? !empty($_POST['is_physical'])
     : ($book !== null && (int) $book['is_physical'] === 1);
+$hideNewBadgeChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? !empty($_POST['hide_new_badge'])
+    : ($book !== null && (int) $book['hide_new_badge'] === 1);
 
 $pageTitle = $isNew ? 'Nieuwe publicatie' : 'Bewerken: ' . $book['title'];
 include APP_ROOT . '/app/templates/admin_header.php';
@@ -290,6 +294,13 @@ include APP_ROOT . '/app/templates/admin_header.php';
   </label>
   <p class="field-hint">Zet dit uit om de publicatie zichtbaar te houden maar tijdelijk niet
      bestelbaar te maken (toont "Niet op voorraad" in plaats van de koopknop).</p>
+
+  <label class="checkbox-line">
+    <input type="checkbox" name="hide_new_badge" value="1" <?= $hideNewBadgeChecked ? 'checked' : '' ?>>
+    Verberg de "Nieuw"-badge
+  </label>
+  <p class="field-hint">Zet dit aan voor een oudere titel die nu pas aan de shop is toegevoegd,
+     zodat die niet als "Nieuw" wordt gepresenteerd.</p>
 
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Opslaan</button>
