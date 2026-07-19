@@ -63,27 +63,38 @@ include APP_ROOT . '/app/templates/admin_header.php';
     <tbody>
       <?php foreach ($orders as $order): ?>
         <?php [$label, $badgeClass] = $statusLabels[$order['status']] ?? [$order['status'], '']; ?>
+        <?php $orderBook = $order['book_id'] ? book_find((int) $order['book_id']) : null; ?>
+        <?php $isPhysicalOrder = $orderBook !== null && book_is_physical($orderBook); ?>
       <tr>
         <td class="nowrap"><?= e(format_datetime($order['created_at'])) ?></td>
         <td><?= e($order['book_title']) ?></td>
         <td>
           <?php if ($order['name'] !== ''): ?><?= e($order['name']) ?><br><?php endif; ?>
           <?= $order['email'] !== '' ? '<span class="muted">' . e($order['email']) . '</span>' : '<span class="muted">-</span>' ?>
+          <?php if ($order['shipping_address'] !== ''): ?>
+            <br><span class="muted"><?= nl2br(e($order['shipping_address'])) ?></span>
+          <?php endif; ?>
         </td>
         <td class="nowrap"><?= e(format_price((int) $order['amount_cents'])) ?></td>
         <td><span class="badge <?= e($badgeClass) ?>"><?= e($label) ?></span></td>
         <td class="nowrap">
-          PDF <?= (int) $order['downloads_pdf'] ?>× · EPUB <?= (int) $order['downloads_epub'] ?>×<br>
-          <span class="muted">geldig t/m <?= e(format_date($order['expires_at'])) ?></span>
+          <?php if ($isPhysicalOrder): ?>
+            Verzending per post
+          <?php else: ?>
+            PDF <?= (int) $order['downloads_pdf'] ?>× · EPUB <?= (int) $order['downloads_epub'] ?>×<br>
+            <span class="muted">geldig t/m <?= e(format_date($order['expires_at'])) ?></span>
+          <?php endif; ?>
         </td>
         <td class="actions">
           <?php if (in_array($order['status'], ['paid', 'free'], true)): ?>
+            <?php if (!$isPhysicalOrder): ?>
             <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form">
               <?= csrf_field() ?>
               <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
               <input type="hidden" name="action" value="reset">
               <button type="submit" class="btn btn-small btn-secondary" title="Zet de downloadteller op nul en verleng de geldigheid">Reset&nbsp;&amp;&nbsp;verleng</button>
             </form>
+            <?php endif; ?>
             <?php if ($order['email'] !== ''): ?>
             <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form">
               <?= csrf_field() ?>

@@ -100,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $priceCents  = parse_price((string) ($_POST['price'] ?? '0'));
         $published   = !empty($_POST['published']) ? 1 : 0;
         $inStock     = !empty($_POST['in_stock']) ? 1 : 0;
+        $isPhysical  = !empty($_POST['is_physical']) ? 1 : 0;
         $sortOrder   = (int) ($_POST['sort_order'] ?? 0);
 
         if ($title === '') {
@@ -113,20 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             if ($book === null) {
                 $stmt = db()->prepare(
-                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, sort_order, created_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, is_physical, sort_order, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
                     book_unique_slug($title),
-                    $title, $subtitle, $description, $priceCents, $published, $inStock, $sortOrder, now(),
+                    $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $sortOrder, now(),
                 ]);
                 $book = book_find((int) db()->lastInsertId());
             } else {
                 $stmt = db()->prepare(
-                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, sort_order = ?
+                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, sort_order = ?
                      WHERE id = ?'
                 );
-                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $sortOrder, $book['id']]);
+                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $sortOrder, $book['id']]);
                 $book = book_find((int) $book['id']);
             }
 
@@ -175,6 +176,9 @@ $publishedChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
 $inStockChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
     ? !empty($_POST['in_stock'])
     : ($book === null || (int) $book['in_stock'] === 1);
+$isPhysicalChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? !empty($_POST['is_physical'])
+    : ($book !== null && (int) $book['is_physical'] === 1);
 
 $pageTitle = $isNew ? 'Nieuwe publicatie' : 'Bewerken: ' . $book['title'];
 include APP_ROOT . '/app/templates/admin_header.php';
@@ -185,8 +189,8 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <p class="alert alert-success">Opgeslagen!
     <?php if ($book !== null && (int) $book['published'] && book_orderable($book)): ?>
       <a href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">Bekijk de pagina in de shop.</a>
-    <?php elseif ($book !== null && (int) $book['published'] && !book_has_files($book)): ?>
-      Let op: er is nog geen PDF of EPUB geüpload, bezoekers kunnen dit boek zien maar nog niet bestellen.
+    <?php elseif ($book !== null && (int) $book['published'] && !book_has_deliverable($book)): ?>
+      Let op: er is nog geen PDF of EPUB geüpload (en het is geen fysiek boek), bezoekers kunnen dit boek zien maar nog niet bestellen.
     <?php elseif ($book !== null && (int) $book['published'] && !(int) $book['in_stock']): ?>
       Let op: dit boek staat op "niet op voorraad", bezoekers zien het boek maar kunnen het niet bestellen.
     <?php endif; ?>
@@ -236,6 +240,14 @@ include APP_ROOT . '/app/templates/admin_header.php';
       <p class="field-hint">Hoger getal = eerder in het overzicht.</p>
     </div>
   </div>
+
+  <label class="checkbox-line">
+    <input type="checkbox" name="is_physical" value="1" <?= $isPhysicalChecked ? 'checked' : '' ?>>
+    Fysiek boek (verzending per post)
+  </label>
+  <p class="field-hint">Voor gedrukte uitgaven zonder PDF/EPUB. De koper vult bij het afrekenen
+     een verzendadres in en ontvangt geen downloadlink, maar een bevestiging dat het boek per
+     post volgt.</p>
 
   <fieldset>
     <legend>Bestanden</legend>

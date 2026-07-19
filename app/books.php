@@ -36,13 +36,27 @@ function book_has_files(array $book): bool
     return $book['pdf_file'] !== '' || $book['epub_file'] !== '';
 }
 
+function book_is_physical(array $book): bool
+{
+    return (int) ($book['is_physical'] ?? 0) === 1;
+}
+
+/** Heeft deze publicatie iets om te leveren: digitale bestanden, of een fysieke uitgave die per post gaat? */
+function book_has_deliverable(array $book): bool
+{
+    return book_is_physical($book) || book_has_files($book);
+}
+
 function book_orderable(array $book): bool
 {
-    return book_has_files($book) && (int) $book['in_stock'] === 1;
+    return book_has_deliverable($book) && (int) $book['in_stock'] === 1;
 }
 
 function book_formats_label(array $book): string
 {
+    if (book_is_physical($book)) {
+        return 'Hardcover · verzending per post';
+    }
     $formats = [];
     if ($book['pdf_file'] !== '') {
         $formats[] = 'PDF';

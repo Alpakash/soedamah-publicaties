@@ -7,10 +7,21 @@ if ($books === []) {
     redirect(url('mandje.php') . ($wasPost ? '?gewijzigd=1' : ''));
 }
 $cartSnapshot = implode(',', array_map(static fn (array $b): int => (int) $b['id'], $books));
+$hasPhysical = false;
+foreach ($books as $b) {
+    if (book_is_physical($b)) {
+        $hasPhysical = true;
+        break;
+    }
+}
 
 $errors = [];
 $naam = trim((string) ($_POST['naam'] ?? ''));
 $email = trim((string) ($_POST['email'] ?? ''));
+$straat = trim((string) ($_POST['straat'] ?? ''));
+$postcode = trim((string) ($_POST['postcode'] ?? ''));
+$plaats = trim((string) ($_POST['plaats'] ?? ''));
+$land = trim((string) ($_POST['land'] ?? ''));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Honeypot: echte bezoekers laten dit veld leeg.
@@ -30,13 +41,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Vul een geldig e-mailadres in.';
     }
+    if ($hasPhysical) {
+        if ($straat === '' || $postcode === '' || $plaats === '' || $land === '') {
+            $errors[] = 'Vul een compleet verzendadres in (straat met huisnummer, postcode, plaats en land) '
+                . 'voor de gedrukte uitgave in je mandje.';
+        }
+    }
 
     if (!$errors) {
+        $shippingAddress = $hasPhysical
+            ? $naam . "\n" . $straat . "\n" . $postcode . ' ' . $plaats . "\n" . $land
+            : '';
         try {
             $orders = [];
             $lineItems = [];
             foreach ($books as $item) {
-                $orders[] = order_create($item, 'pending', $email, $naam);
+                $orders[] = order_create(
+                    $item,
+                    'pending',
+                    $email,
+                    $naam,
+                    null,
+                    book_is_physical($item) ? $shippingAddress : ''
+                );
                 $lineItem = [
                     'quantity'   => 1,
                     'price_data' => [
@@ -97,7 +124,7 @@ include APP_ROOT . '/app/templates/header.php';
       <span>Totaal</span>
       <span><?= e(format_price(cart_total($books))) ?></span>
     </div>
-    <p class="field-hint">Prijzen zijn inclusief 9% btw.</p>
+    <p class="field-hint">Prijzen zijn incl. btw.</p>
   </div>
 
   <?php foreach ($errors as $error): ?>
@@ -114,7 +141,34 @@ include APP_ROOT . '/app/templates/header.php';
     <label for="email">E-mailadres</label>
     <input type="email" id="email" name="email" required autocomplete="email"
            value="<?= e($email) ?>" placeholder="naam@voorbeeld.nl">
-    <p class="field-hint">Op dit e-mailadres ontvang je de downloadlinks.</p>
+    <p class="field-hint">
+      <?= $hasPhysical
+          ? 'Op dit e-mailadres ontvang je de bevestiging (en eventuele downloadlinks).'
+          : 'Op dit e-mailadres ontvang je de downloadlinks.' ?>
+    </p>
+
+    <?php if ($hasPhysical): ?>
+      <p class="field-hint">Je mandje bevat een gedrukte uitgave; die versturen we per post.</p>
+      <label for="straat">Straat en huisnummer</label>
+      <input type="text" id="straat" name="straat" required maxlength="200" autocomplete="street-address"
+             value="<?= e($straat) ?>">
+      <div class="form-row">
+        <div>
+          <label for="postcode">Postcode</label>
+          <input type="text" id="postcode" name="postcode" required maxlength="20" autocomplete="postal-code"
+                 value="<?= e($postcode) ?>">
+        </div>
+        <div>
+          <label for="plaats">Plaats</label>
+          <input type="text" id="plaats" name="plaats" required maxlength="150" autocomplete="address-level2"
+                 value="<?= e($plaats) ?>">
+        </div>
+      </div>
+      <label for="land">Land</label>
+      <input type="text" id="land" name="land" required maxlength="100" autocomplete="country-name"
+             value="<?= e($land !== '' ? $land : 'Nederland') ?>">
+    <?php endif; ?>
+
     <button type="submit" class="btn btn-primary btn-large">Doorgaan naar betalen</button>
   </form>
   <p class="back-link"><a href="<?= e(url('mandje.php')) ?>">← Terug naar mandje</a></p>

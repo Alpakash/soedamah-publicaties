@@ -48,9 +48,9 @@ include APP_ROOT . '/app/templates/header.php';
         <span class="formats"><?= e(book_formats_label($book)) ?></span>
       </p>
       <?php if (!$isFree): ?>
-        <p class="buy-note">Prijs is inclusief 9% btw.</p>
+        <p class="buy-note">Prijs is incl. btw.</p>
       <?php endif; ?>
-      <?php if (!book_has_files($book)): ?>
+      <?php if (!book_has_deliverable($book)): ?>
         <p class="muted">Deze publicatie is nog niet te bestellen.</p>
       <?php elseif (!book_orderable($book)): ?>
         <p class="muted">Deze publicatie is tijdelijk niet op voorraad.</p>
@@ -68,6 +68,10 @@ include APP_ROOT . '/app/templates/header.php';
             <input type="hidden" name="id" value="<?= (int) $book['id'] ?>">
             <button type="submit" class="btn btn-primary">Kopen</button>
           </form>
+        <?php endif; ?>
+        <?php if (book_is_physical($book)): ?>
+          <p class="buy-note">Dit is een gedrukte uitgave; we versturen het boek per post naar
+             het adres dat je bij het afrekenen opgeeft.</p>
         <?php endif; ?>
       <?php endif; ?>
     </div>

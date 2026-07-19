@@ -34,13 +34,19 @@ function order_expiry_from_now(): string
 /**
  * Maakt een bestelling aan. Status: 'pending' (wacht op betaling) of 'free'.
  */
-function order_create(array $book, string $status, string $email = '', string $name = '', ?string $sessionId = null): array
-{
+function order_create(
+    array $book,
+    string $status,
+    string $email = '',
+    string $name = '',
+    ?string $sessionId = null,
+    string $shippingAddress = ''
+): array {
     $stmt = db()->prepare(
         'INSERT INTO orders
             (book_id, book_title, email, name, stripe_session_id, amount_cents, status,
-             token, expires_at, created_at, paid_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+             token, expires_at, created_at, paid_at, shipping_address)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $stmt->execute([
         $book['id'],
@@ -54,6 +60,7 @@ function order_create(array $book, string $status, string $email = '', string $n
         order_expiry_from_now(),
         now(),
         $status === 'free' ? now() : null,
+        $shippingAddress,
     ]);
     $order = order_find((int) db()->lastInsertId());
     if ($order === null) {
@@ -157,14 +164,30 @@ function orders_send_links(array $orders): bool
     }
 
     $isFree = count($unsent) === 1 && $unsent[0][0]['status'] === 'free';
+    $anyPhysical = false;
+    $anyDigital = false;
+    foreach ($unsent as [, $book]) {
+        if (book_is_physical($book)) {
+            $anyPhysical = true;
+        } else {
+            $anyDigital = true;
+        }
+    }
+
     $lines = [];
     $lines[] = 'Beste ' . ($buyerName !== '' ? $buyerName : 'lezer') . ',';
     $lines[] = '';
     if (count($unsent) === 1) {
-        $lines[] = ($isFree
+        $intro = $isFree
             ? 'Bedankt voor je interesse in "' . $unsent[0][1]['title'] . '".'
-            : 'Bedankt voor je aankoop van "' . $unsent[0][1]['title'] . '".')
-            . ' Je kunt de publicatie downloaden via onderstaande link(s):';
+            : 'Bedankt voor je aankoop van "' . $unsent[0][1]['title'] . '".';
+        $lines[] = $anyPhysical
+            ? $intro . ' We versturen dit boek per post naar het door jou opgegeven adres.'
+            : $intro . ' Je kunt de publicatie downloaden via onderstaande link(s):';
+    } elseif ($anyPhysical) {
+        $lines[] = 'Bedankt voor je aankoop.'
+            . ($anyDigital ? ' De digitale publicatie(s) kun je downloaden via onderstaande link(s);' : '')
+            . ' de gedrukte uitgave versturen we per post naar het door jou opgegeven adres.';
     } else {
         $lines[] = 'Bedankt voor je aankoop. Je kunt de publicaties downloaden via onderstaande links:';
     }
@@ -173,22 +196,32 @@ function orders_send_links(array $orders): bool
         if (count($unsent) > 1) {
             $lines[] = $book['title'];
         }
-        if ($book['pdf_file'] !== '') {
-            $lines[] = 'PDF:  ' . order_download_url($order, 'pdf');
-        }
-        if ($book['epub_file'] !== '') {
-            $lines[] = 'EPUB: ' . order_download_url($order, 'epub');
+        if (book_is_physical($book)) {
+            $lines[] = 'Gedrukte uitgave (hardcover) — wordt per post verzonden.';
+        } else {
+            if ($book['pdf_file'] !== '') {
+                $lines[] = 'PDF:  ' . order_download_url($order, 'pdf');
+            }
+            if ($book['epub_file'] !== '') {
+                $lines[] = 'EPUB: ' . order_download_url($order, 'epub');
+            }
         }
     }
     $lines[] = '';
-    $lines[] = 'De links zijn ' . (int) config('download_days', 90) . ' dagen geldig; de uitgaven zijn voor persoonlijk gebruik.';
-    $lines[] = 'Lukt het downloaden niet? Beantwoord dan deze e-mail.';
+    if ($anyDigital) {
+        $lines[] = 'De downloadlink(s) zijn ' . (int) config('download_days', 90) . ' dagen geldig; de uitgaven zijn voor persoonlijk gebruik.';
+    }
+    $lines[] = $anyPhysical
+        ? 'Vragen over je bestelling? Beantwoord dan deze e-mail.'
+        : 'Lukt het downloaden niet? Beantwoord dan deze e-mail.';
     $lines[] = '';
     $lines[] = 'Met vriendelijke groet,';
     $lines[] = (string) config('mail_from_name', 'Lachman Soedamah');
     $lines[] = base_url();
 
-    $subject = count($unsent) === 1 ? 'Je download: ' . $unsent[0][1]['title'] : 'Je downloads';
+    $subject = count($unsent) === 1
+        ? ($anyPhysical ? 'Je bestelling: ' . $unsent[0][1]['title'] : 'Je download: ' . $unsent[0][1]['title'])
+        : ($anyPhysical ? 'Je bestelling' : 'Je downloads');
     $ok = send_mail($email, $subject, implode("\n", $lines));
     if ($ok) {
         $stmt = db()->prepare('UPDATE orders SET email_sent_at = ? WHERE id = ?');
@@ -215,6 +248,7 @@ function orders_notify_admin(array $orders): void
     $itemLines = [];
     $email = '';
     $name = '';
+    $shippingAddress = '';
     foreach ($orders as $order) {
         $total += (int) $order['amount_cents'];
         $itemLines[] = '- ' . $order['book_title'] . ' (' . format_price((int) $order['amount_cents']) . ')';
@@ -224,13 +258,17 @@ function orders_notify_admin(array $orders): void
         if ($name === '' && !empty($order['name'])) {
             $name = $order['name'];
         }
+        if ($shippingAddress === '' && !empty($order['shipping_address'])) {
+            $shippingAddress = (string) $order['shipping_address'];
+        }
     }
     $koper = trim($name . ($email !== '' ? ' <' . $email . '>' : ''));
     $body = "Er is een nieuwe bestelling binnengekomen.\n\n"
         . implode("\n", $itemLines) . "\n\n"
         . 'Totaal: ' . format_price($total) . "\n"
-        . 'Koper:  ' . ($koper !== '' ? $koper : 'onbekend') . "\n\n"
-        . 'Bekijk alle bestellingen: ' . url('admin/bestellingen.php') . "\n";
+        . 'Koper:  ' . ($koper !== '' ? $koper : 'onbekend') . "\n"
+        . ($shippingAddress !== '' ? "\nVerzendadres (per post):\n" . $shippingAddress . "\n" : '')
+        . "\nBekijk alle bestellingen: " . url('admin/bestellingen.php') . "\n";
     $subject = count($orders) === 1
         ? 'Nieuwe bestelling: ' . $orders[0]['book_title']
         : 'Nieuwe bestelling (' . count($orders) . ' publicaties)';

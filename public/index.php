@@ -4,7 +4,7 @@ require __DIR__ . '/../app/bootstrap.php';
 $books = books_published();
 $featured = $books[0] ?? null;
 $isNewBook = static function (array $book): bool {
-    return book_has_files($book)
+    return book_has_deliverable($book)
         && (strtotime($book['created_at'] . ' UTC') > time() - 45 * 86400);
 };
 
@@ -19,8 +19,11 @@ include APP_ROOT . '/app/templates/header.php';
   <div class="hero-text">
     <p class="kicker">Boeken &amp; essays · rechtstreeks van de auteur</p>
     <h1>Publicaties van<br>Lachman Soedamah</h1>
-    <p class="hero-lead">Over Suriname en het volkenrecht, de erfenis van de Hindostaanse
-       contractarbeid en de vraag wat integer leiderschap betekent.</p>
+    <p class="hero-lead">Nu we terugkijken op de afgelopen 25 jaar zien we dat dr. mr. L. Soedamah
+       als advocaat in de Bijlmer veel heeft gedaan voor de mensen in en buiten de Bijlmer.
+       Dankzij de inzet van dr. mr. L. Soedamah hebben veel mensen, vooral in de Bijlmer, hun recht
+       kunnen krijgen. Maar dr. mr. L. Soedamah is nog lang niet klaar. Met Soedamah Advocaten wil
+       hij zijn aanwezigheid in heel Nederland bestempelen. Het gevecht naar gerechtigheid gaat door.</p>
     <p class="hero-actions">
       <a class="btn btn-primary btn-large" href="#publicaties">Bekijk de publicaties</a>
       <a class="btn btn-ghost" href="#over-de-auteur">Over de auteur</a>
@@ -30,7 +33,7 @@ include APP_ROOT . '/app/templates/header.php';
     <?php if ($featured !== null): ?>
       <a class="hero-book" href="<?= e(url('boek.php?b=' . $featured['slug'])) ?>">
         <span class="cover-frame">
-          <?php if (!book_has_files($featured)): ?>
+          <?php if (!book_has_deliverable($featured)): ?>
             <span class="badge-floating">Nog niet beschikbaar</span>
           <?php elseif (!book_orderable($featured)): ?>
             <span class="badge-floating">Niet op voorraad</span>
@@ -46,7 +49,7 @@ include APP_ROOT . '/app/templates/header.php';
         </span>
         <span class="hero-book-caption">
           <strong><?= e($featured['title']) ?></strong>
-          <span><?= book_has_files($featured)
+          <span><?= book_has_deliverable($featured)
               ? e(format_price((int) $featured['price_cents'])) . ' · ' . e(book_formats_label($featured))
               : 'Nog niet beschikbaar' ?></span>
         </span>
@@ -74,7 +77,7 @@ include APP_ROOT . '/app/templates/header.php';
       <?php foreach ($books as $book): ?>
         <a class="book-card" href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">
           <span class="cover-frame">
-            <?php if (!book_has_files($book)): ?>
+            <?php if (!book_has_deliverable($book)): ?>
               <span class="badge-floating">Nog niet beschikbaar</span>
             <?php elseif (!book_orderable($book)): ?>
               <span class="badge-floating">Niet op voorraad</span>
@@ -94,7 +97,7 @@ include APP_ROOT . '/app/templates/header.php';
               <span class="book-subtitle"><?= e($book['subtitle']) ?></span>
             <?php endif; ?>
             <span class="book-meta">
-              <?php if (book_has_files($book)): ?>
+              <?php if (book_has_deliverable($book)): ?>
                 <span class="price"><?= e(format_price((int) $book['price_cents'])) ?></span>
               <?php endif; ?>
               <span class="formats"><?= e(book_formats_label($book)) ?></span>

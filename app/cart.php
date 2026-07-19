@@ -38,7 +38,7 @@ function cart_store(array $ids): void
     }
 }
 
-/** Alleen boeken die echt te koop zijn: online, betaald, op voorraad én met bestanden. */
+/** Alleen boeken die echt te koop zijn: online, betaald, op voorraad én leverbaar (bestanden of fysiek). */
 function cart_books(): array
 {
     $books = [];

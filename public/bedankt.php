@@ -82,26 +82,36 @@ include APP_ROOT . '/app/templates/header.php';
 <?php include APP_ROOT . '/app/templates/header.php'; ?>
   <div class="thanks">
     <h1>Bedankt voor je <?= count($orders) === 1 && $orders[0]['status'] === 'free' ? 'download' : 'aankoop' ?>!</h1>
+    <?php $anyDigitalOrder = false; ?>
     <?php foreach ($orders as $order): ?>
       <?php $book = $order['book_id'] ? book_find((int) $order['book_id']) : null; ?>
       <?php if ($book === null) { continue; } ?>
       <div class="thanks-item">
         <p><strong><?= e($book['title']) ?></strong></p>
-        <p class="download-buttons">
-          <?php if ($book['pdf_file'] !== ''): ?>
-            <a class="btn btn-primary" href="<?= e(order_download_url($order, 'pdf')) ?>">Download PDF</a>
-          <?php endif; ?>
-          <?php if ($book['epub_file'] !== ''): ?>
-            <a class="btn btn-primary" href="<?= e(order_download_url($order, 'epub')) ?>">Download EPUB</a>
-          <?php endif; ?>
-        </p>
+        <?php if (book_is_physical($book)): ?>
+          <p class="muted">Dit is een gedrukte uitgave. We versturen het boek per post naar het
+             adres dat je bij het afrekenen hebt opgegeven.</p>
+        <?php else: ?>
+          <?php $anyDigitalOrder = true; ?>
+          <p class="download-buttons">
+            <?php if ($book['pdf_file'] !== ''): ?>
+              <a class="btn btn-primary" href="<?= e(order_download_url($order, 'pdf')) ?>">Download PDF</a>
+            <?php endif; ?>
+            <?php if ($book['epub_file'] !== ''): ?>
+              <a class="btn btn-primary" href="<?= e(order_download_url($order, 'epub')) ?>">Download EPUB</a>
+            <?php endif; ?>
+          </p>
+        <?php endif; ?>
       </div>
     <?php endforeach; ?>
     <?php if ($buyerEmail !== ''): ?>
-      <p>De links zijn ook gemaild naar <strong><?= e($buyerEmail) ?></strong>.</p>
+      <p>Een bevestiging<?= $anyDigitalOrder ? ' met downloadlinks' : '' ?> is ook gemaild naar
+         <strong><?= e($buyerEmail) ?></strong>.</p>
     <?php endif; ?>
-    <p class="muted">De links zijn <?= (int) config('download_days', 90) ?> dagen geldig;
-       deze uitgave is voor persoonlijk gebruik.</p>
+    <?php if ($anyDigitalOrder): ?>
+      <p class="muted">De downloadlinks zijn <?= (int) config('download_days', 90) ?> dagen geldig;
+         deze uitgave is voor persoonlijk gebruik.</p>
+    <?php endif; ?>
     <p><a href="<?= e(url()) ?>">← Terug naar alle publicaties</a></p>
   </div>
 <?php endif; ?>

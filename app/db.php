@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS books (
     epub_file   TEXT NOT NULL DEFAULT '',
     published   INTEGER NOT NULL DEFAULT 0,
     in_stock    INTEGER NOT NULL DEFAULT 1,
+    is_physical INTEGER NOT NULL DEFAULT 0,
     sort_order  INTEGER NOT NULL DEFAULT 0,
     created_at  TEXT NOT NULL
 )
@@ -74,6 +75,7 @@ CREATE TABLE IF NOT EXISTS orders (
     downloads_epub    INTEGER NOT NULL DEFAULT 0,
     expires_at        TEXT,
     email_sent_at     TEXT,
+    shipping_address  TEXT NOT NULL DEFAULT '',
     created_at        TEXT NOT NULL,
     paid_at           TEXT
 )
@@ -124,11 +126,17 @@ SQL);
     if (!in_array('name', $orderColumns, true)) {
         $pdo->exec("ALTER TABLE orders ADD COLUMN name TEXT NOT NULL DEFAULT ''");
     }
+    if (!in_array('shipping_address', $orderColumns, true)) {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN shipping_address TEXT NOT NULL DEFAULT ''");
+    }
 
-    // Migratie voor bestaande databases: voorraadstatus per publicatie.
+    // Migratie voor bestaande databases: voorraadstatus en fysieke uitgaven per publicatie.
     $bookColumns = $pdo->query('PRAGMA table_info(books)')->fetchAll(PDO::FETCH_COLUMN, 1);
     if (!in_array('in_stock', $bookColumns, true)) {
         $pdo->exec('ALTER TABLE books ADD COLUMN in_stock INTEGER NOT NULL DEFAULT 1');
+    }
+    if (!in_array('is_physical', $bookColumns, true)) {
+        $pdo->exec('ALTER TABLE books ADD COLUMN is_physical INTEGER NOT NULL DEFAULT 0');
     }
 
     $pdo->exec(<<<SQL
