@@ -5,11 +5,11 @@
       <p class="footer-brand">Lachman Soedamah · Publicaties</p>
       <p>Boeken en essays over Suriname, het volkenrecht en de
          Hindostaanse gemeenschap — rechtstreeks van de auteur.</p>
+      <p><a href="<?= e(url('artikelen.php')) ?>">Artikelen &amp; beschouwingen</a></p>
     </div>
     <div>
       <p class="footer-heading">Elders</p>
       <p><a href="https://soedamah.nl">soedamah.nl</a><br>
-         <a href="https://soedamah.nl/publicaties">Artikelen &amp; beschouwingen</a><br>
          <a href="https://soedamah.nl/contact/">Contact</a></p>
     </div>
   </div>
