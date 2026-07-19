@@ -69,7 +69,8 @@ include APP_ROOT . '/app/templates/header.php';
         <span class="cart-row-price"><strong><?= e(format_price(cart_total($books))) ?></strong></span>
         <span class="cart-remove-spacer"></span>
       </div>
-      <p class="field-hint">Prijzen zijn incl. btw.</p>
+      <?php $hasPhysicalInCart = false; foreach ($books as $b) { if (book_is_physical($b)) { $hasPhysicalInCart = true; break; } } ?>
+      <p class="field-hint">Prijzen zijn incl. btw<?= $hasPhysicalInCart ? ' en verzendkosten' : '' ?>.</p>
     </div>
 
     <div class="form-actions">

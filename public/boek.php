@@ -48,7 +48,7 @@ include APP_ROOT . '/app/templates/header.php';
         <span class="formats"><?= e(book_formats_label($book)) ?></span>
       </p>
       <?php if (!$isFree): ?>
-        <p class="buy-note">Prijs is incl. btw.</p>
+        <p class="buy-note">Prijs is incl. btw<?= book_is_physical($book) ? ' en verzendkosten' : '' ?>.</p>
       <?php endif; ?>
       <?php if (!book_has_deliverable($book)): ?>
         <p class="muted">Deze publicatie is nog niet te bestellen.</p>

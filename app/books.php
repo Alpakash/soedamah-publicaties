@@ -55,7 +55,7 @@ function book_orderable(array $book): bool
 function book_formats_label(array $book): string
 {
     if (book_is_physical($book)) {
-        return 'Hardcover · verzending per post';
+        return 'Hardcover';
     }
     $formats = [];
     if ($book['pdf_file'] !== '') {

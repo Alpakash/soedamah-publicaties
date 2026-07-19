@@ -124,7 +124,7 @@ include APP_ROOT . '/app/templates/header.php';
       <span>Totaal</span>
       <span><?= e(format_price(cart_total($books))) ?></span>
     </div>
-    <p class="field-hint">Prijzen zijn incl. btw.</p>
+    <p class="field-hint">Prijzen zijn incl. btw<?= $hasPhysical ? ' en verzendkosten' : '' ?>.</p>
   </div>
 
   <?php foreach ($errors as $error): ?>
