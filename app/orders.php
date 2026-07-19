@@ -241,7 +241,7 @@ function order_send_links(array $order): bool
 function orders_notify_admin(array $orders): void
 {
     $admin = (string) config('admin_email', '');
-    if ($admin === '' || $orders === []) {
+    if ($orders === []) {
         return;
     }
     $total = 0;
@@ -272,7 +272,22 @@ function orders_notify_admin(array $orders): void
     $subject = count($orders) === 1
         ? 'Nieuwe bestelling: ' . $orders[0]['book_title']
         : 'Nieuwe bestelling (' . count($orders) . ' publicaties)';
-    send_mail($admin, $subject, $body);
+
+    if ($shippingAddress !== '') {
+        // Bestellingen met een verzendadres gaan naar wie het boek daadwerkelijk post,
+        // met de gewone beheerder in de CC.
+        $shippingTo = (string) config('shipping_notify_email', '');
+        $to = $shippingTo !== '' ? $shippingTo : $admin;
+        $cc = ($admin !== '' && $admin !== $to) ? $admin : '';
+        if ($to !== '') {
+            send_mail($to, $subject, $body, $cc);
+        }
+        return;
+    }
+
+    if ($admin !== '') {
+        send_mail($admin, $subject, $body);
+    }
 }
 
 /** Wrapper voor één losse bestelling (gratis download). */

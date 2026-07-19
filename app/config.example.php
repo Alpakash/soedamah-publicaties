@@ -23,6 +23,11 @@ return [
     // Dit adres ontvangt een melding bij elke bestelling (leeg = geen meldingen).
     'admin_email' => '',
 
+    // Voor bestellingen met een verzendadres (fysieke boeken) gaat de meldmail naar dit
+    // adres i.p.v. naar admin_email, met admin_email in de CC. Leeg laten = gewoon naar
+    // admin_email, zoals bij digitale bestellingen.
+    'shipping_notify_email' => '',
+
     // Downloadlimieten per bestelling.
     'download_max'  => 5,   // aantal downloads per bestand (PDF en EPUB apart)
     'download_days' => 90,  // geldigheid van de downloadlink in dagen

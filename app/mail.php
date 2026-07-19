@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-function send_mail(string $to, string $subject, string $body): bool
+function send_mail(string $to, string $subject, string $body, string $cc = ''): bool
 {
     $fromEmail = (string) config('mail_from', '');
     if ($fromEmail === '') {
@@ -20,6 +20,9 @@ function send_mail(string $to, string $subject, string $body): bool
         'Content-Type: text/plain; charset=UTF-8',
         'Content-Transfer-Encoding: 8bit',
     ];
+    if ($cc !== '') {
+        $headers[] = 'Cc: ' . $cc;
+    }
 
     $ok = @mail(
         $to,
