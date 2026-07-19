@@ -60,6 +60,7 @@ include APP_ROOT . '/app/templates/header.php';
         <span class="cart-row-price"><strong><?= e(format_price(cart_total($books))) ?></strong></span>
         <span class="cart-remove-spacer"></span>
       </div>
+      <p class="field-hint">Prijzen zijn inclusief 9% btw.</p>
     </div>
 
     <div class="form-actions">

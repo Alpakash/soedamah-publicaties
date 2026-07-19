@@ -47,6 +47,9 @@ include APP_ROOT . '/app/templates/header.php';
       <p class="buy-price"><?= e(format_price((int) $book['price_cents'])) ?>
         <span class="formats"><?= e(book_formats_label($book)) ?></span>
       </p>
+      <?php if (!$isFree): ?>
+        <p class="buy-note">Prijs is inclusief 9% btw.</p>
+      <?php endif; ?>
       <?php if (!book_has_files($book)): ?>
         <p class="muted">Deze publicatie verschijnt binnenkort en is nog niet te bestellen.</p>
       <?php elseif (!book_orderable($book)): ?>
