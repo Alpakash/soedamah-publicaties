@@ -32,7 +32,7 @@ include APP_ROOT . '/app/templates/header.php';
       <a class="hero-book" href="<?= e(url('boek.php?b=' . $featured['slug'])) ?>">
         <span class="cover-frame">
           <?php if (!book_has_files($featured)): ?>
-            <span class="badge-floating">Binnenkort</span>
+            <span class="badge-floating">Nog niet beschikbaar</span>
           <?php elseif (!book_orderable($featured)): ?>
             <span class="badge-floating">Niet op voorraad</span>
           <?php elseif ($isNewBook($featured)): ?>
@@ -49,7 +49,7 @@ include APP_ROOT . '/app/templates/header.php';
           <strong><?= e($featured['title']) ?></strong>
           <span><?= book_has_files($featured)
               ? e(format_price((int) $featured['price_cents'])) . ' · ' . e(book_formats_label($featured))
-              : 'Verschijnt binnenkort' ?></span>
+              : 'Nog niet beschikbaar' ?></span>
         </span>
       </a>
     <?php else: ?>
@@ -76,7 +76,7 @@ include APP_ROOT . '/app/templates/header.php';
         <a class="book-card" href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">
           <span class="cover-frame">
             <?php if (!book_has_files($book)): ?>
-              <span class="badge-floating">Binnenkort</span>
+              <span class="badge-floating">Nog niet beschikbaar</span>
             <?php elseif (!book_orderable($book)): ?>
               <span class="badge-floating">Niet op voorraad</span>
             <?php elseif ($isNewBook($book)): ?>

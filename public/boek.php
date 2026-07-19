@@ -51,7 +51,7 @@ include APP_ROOT . '/app/templates/header.php';
         <p class="buy-note">Prijs is inclusief 9% btw.</p>
       <?php endif; ?>
       <?php if (!book_has_files($book)): ?>
-        <p class="muted">Deze publicatie verschijnt binnenkort en is nog niet te bestellen.</p>
+        <p class="muted">Deze publicatie is nog niet te bestellen.</p>
       <?php elseif (!book_orderable($book)): ?>
         <p class="muted">Deze publicatie is tijdelijk niet op voorraad.</p>
       <?php elseif ($isFree): ?>

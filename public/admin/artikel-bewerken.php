@@ -1,6 +1,5 @@
 <?php
 require __DIR__ . '/../../app/bootstrap.php';
-require APP_ROOT . '/app/auth.php';
 require_admin();
 
 const ARTICLE_UPLOAD_DIR = 'uploads/articles';
@@ -106,6 +105,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $title, $excerpt, $bodyHtml, $coverFile, $published, $articleDate, now(), $article['id'],
                 ]);
                 $newId = (int) $article['id'];
+            }
+            if ($published) {
+                $savedArticle = article_find($newId);
+                redirect(url('artikel.php?a=' . $savedArticle['slug']));
             }
             redirect(url('admin/artikel-bewerken.php?id=' . $newId . '&saved=1'));
         }

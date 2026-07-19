@@ -420,6 +420,8 @@ a:hover { color: var(--accent-dark); }
 .breadcrumb a { text-decoration: none; }
 .breadcrumb span { margin: 0 0.4rem; }
 
+.admin-edit-bar { margin: -1.25rem 0 1.5rem; }
+
 .book-detail {
   display: grid;
   grid-template-columns: 300px 1fr;

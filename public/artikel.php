@@ -20,6 +20,11 @@ if ($article['cover_file'] !== '') {
 include APP_ROOT . '/app/templates/header.php';
 ?>
 <nav class="breadcrumb"><a href="<?= e(url('artikelen.php')) ?>">Artikelen</a> <span>/</span> <?= e($article['title']) ?></nav>
+<?php if (isset($_COOKIE['sp_admin']) && admin_logged_in()): ?>
+  <p class="admin-edit-bar">
+    <a class="btn btn-small btn-secondary" href="<?= e(url('admin/artikel-bewerken.php?id=' . $article['id'])) ?>">Bewerken</a>
+  </p>
+<?php endif; ?>
 <article class="article-detail">
   <p class="article-date"><?= e(format_date($article['article_date'])) ?></p>
   <h1><?= e($article['title']) ?></h1>

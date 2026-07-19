@@ -50,7 +50,7 @@ function book_formats_label(array $book): string
     if ($book['epub_file'] !== '') {
         $formats[] = 'EPUB';
     }
-    return $formats ? implode(' · ', $formats) : 'Verschijnt binnenkort';
+    return $formats ? implode(' · ', $formats) : 'Nog niet beschikbaar';
 }
 
 function book_unique_slug(string $title, int $excludeId = 0): string

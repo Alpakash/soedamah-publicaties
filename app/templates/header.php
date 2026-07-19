@@ -38,6 +38,9 @@ $pageTitle = $pageTitle ?? 'Publicaties';
       <a href="<?= e(url('#publicaties')) ?>">Boeken</a>
       <a href="<?= e(url('artikelen.php')) ?>">Artikelen</a>
       <a href="<?= e(url('#over-de-auteur')) ?>">Over de auteur</a>
+      <?php if (isset($_COOKIE['sp_admin']) && admin_logged_in()): ?>
+        <a href="<?= e(url('admin/')) ?>">Backoffice</a>
+      <?php endif; ?>
       <?php $cartCount = function_exists('cart_ids') ? count(cart_ids()) : 0; ?>
       <a class="nav-cart" href="<?= e(url('mandje.php')) ?>"
          aria-label="Winkelmandje<?= $cartCount > 0 ? ' (' . $cartCount . ' publicaties)' : '' ?>">

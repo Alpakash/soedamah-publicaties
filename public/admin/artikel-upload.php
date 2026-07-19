@@ -1,6 +1,5 @@
 <?php
 require __DIR__ . '/../../app/bootstrap.php';
-require APP_ROOT . '/app/auth.php';
 
 header('Content-Type: application/json');
 

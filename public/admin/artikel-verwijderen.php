@@ -1,6 +1,5 @@
 <?php
 require __DIR__ . '/../../app/bootstrap.php';
-require APP_ROOT . '/app/auth.php';
 require_admin();
 
 $article = article_find((int) ($_GET['id'] ?? ($_POST['id'] ?? 0)));
