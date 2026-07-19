@@ -119,6 +119,9 @@ include APP_ROOT . '/app/templates/header.php';
        Hij publiceert regelmatig over staatsrechtelijke en maatschappelijke thema's en draagt
        actief bij aan het publieke debat over de toekomst van Suriname. Voor zijn langdurige
        maatschappelijke verdiensten is hij zowel door Suriname als door Nederland onderscheiden.</p>
+    <p>Met <em>Diasporavisie 2050 – Van territoriale staat naar mondiale Surinaamse natie</em>
+       presenteert Lachman Soedamah een vernieuwende visie op de rol van de Surinaamse diaspora
+       als strategische partner in de ontwikkeling van Suriname.</p>
     <blockquote class="author-quote">
       <p>„Leiderschap wordt uiteindelijk niet beoordeeld op afkomst, maar op integriteit.
          Niet op retoriek, maar op resultaten."</p>
