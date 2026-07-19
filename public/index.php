@@ -15,11 +15,7 @@ include APP_ROOT . '/app/templates/header.php';
   <div class="hero-text">
     <p class="kicker">Boeken &amp; essays · rechtstreeks van de auteur</p>
     <h1>Publicaties van<br>Lachman Soedamah</h1>
-    <p class="hero-lead">Nu we terugkijken op de afgelopen 25 jaar zien we dat dr. mr. L. Soedamah
-       als advocaat in de Bijlmer veel heeft gedaan voor de mensen in en buiten de Bijlmer.
-       Dankzij de inzet van dr. mr. L. Soedamah hebben veel mensen, vooral in de Bijlmer, hun recht
-       kunnen krijgen. Maar dr. mr. L. Soedamah is nog lang niet klaar. Met Soedamah Advocaten wil
-       hij zijn aanwezigheid in heel Nederland bestempelen. Het gevecht naar gerechtigheid gaat door.</p>
+
     <p class="hero-actions">
       <a class="btn btn-primary btn-large" href="#publicaties">Bekijk de publicaties</a>
       <a class="btn btn-ghost" href="#over-de-auteur">Over de auteur</a>
