@@ -391,7 +391,7 @@ a:hover { color: var(--accent-dark); }
   display: grid;
   grid-template-columns: 110px 1fr;
   gap: 1.5rem;
-  align-items: center;
+  align-items: start;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -568,6 +568,7 @@ a:hover { color: var(--accent-dark); }
 .cart-remove:hover { color: var(--error-ink); border-color: var(--error-ink); }
 .cart-remove-spacer { width: 30px; }
 .cart-total-row { background: var(--paper); border-radius: 0 0 10px 10px; }
+.cart-list .field-hint { padding: 0 1.25rem 1rem; }
 
 .thanks-item {
   border-bottom: 1px solid var(--line);
@@ -820,7 +821,20 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 .editor-area img { max-width: 100%; border-radius: 6px; }
 .editor-area iframe { max-width: 100%; }
 
-.table-scroll { overflow-x: auto; }
+.table-scroll {
+  overflow-x: auto;
+  /* CSS-only "scroll shadows": een schaduw aan een rand verschijnt alleen als
+     er in die richting nog meer te scrollen valt (geen JS nodig). */
+  background:
+    linear-gradient(to right, var(--card) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to right, rgba(255, 255, 255, 0), var(--card) 70%) 100% 0,
+    linear-gradient(to right, rgba(38, 34, 28, 0.15), rgba(38, 34, 28, 0)),
+    linear-gradient(to left, rgba(38, 34, 28, 0.15), rgba(38, 34, 28, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-color: var(--card);
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
 
 .admin-table {
   width: 100%;
@@ -845,6 +859,10 @@ legend { font-weight: 700; padding: 0 0.5rem; }
 .admin-table tr:last-child td { border-bottom: none; }
 .admin-table .actions { white-space: nowrap; }
 .admin-table .actions form { margin: 0 0 0.25rem; }
+/* Bestellingenoverzicht heeft méér kolommen (incl. verzendadres) en dus minder
+   ruimte over; knoppen daar onder elkaar i.p.v. naast elkaar houdt de tabel smaller. */
+.admin-table .actions-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; white-space: normal; }
+.admin-table .actions-stack form.inline-form { display: block; margin: 0; }
 .nowrap { white-space: nowrap; }
 
 /* ---------- Mobiel ---------- */

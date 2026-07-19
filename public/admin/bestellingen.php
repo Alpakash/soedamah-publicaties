@@ -85,7 +85,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
             <span class="muted">geldig t/m <?= e(format_date($order['expires_at'])) ?></span>
           <?php endif; ?>
         </td>
-        <td class="actions">
+        <td class="actions actions-stack">
           <?php if (in_array($order['status'], ['paid', 'free'], true)): ?>
             <?php if (!$isPhysicalOrder): ?>
             <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form">
