@@ -2,7 +2,7 @@
 require __DIR__ . '/../app/bootstrap.php';
 
 $book = book_find((int) ($_GET['b'] ?? 0));
-if ($book === null || $book['cover_file'] === '') {
+if ($book === null || (int) $book['published'] !== 1 || $book['cover_file'] === '') {
     http_response_code(404);
     exit;
 }

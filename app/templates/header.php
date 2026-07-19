@@ -5,6 +5,9 @@
  *            $metaRefresh (int, seconden tot automatisch verversen).
  */
 $pageTitle = $pageTitle ?? 'Publicaties';
+// Vóór alle HTML-output aanroepen: session_start() kan niet meer nadat er
+// al iets is verzonden, dus dit moet boven in het script gebeuren.
+$isAdminVisitor = isset($_COOKIE['sp_admin']) && admin_logged_in();
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -38,10 +41,10 @@ $pageTitle = $pageTitle ?? 'Publicaties';
       <a href="<?= e(url('#publicaties')) ?>">Boeken</a>
       <a href="<?= e(url('artikelen.php')) ?>">Artikelen</a>
       <a href="<?= e(url('#over-de-auteur')) ?>">Over de auteur</a>
-      <?php if (isset($_COOKIE['sp_admin']) && admin_logged_in()): ?>
+      <?php if ($isAdminVisitor): ?>
         <a href="<?= e(url('admin/')) ?>">Backoffice</a>
       <?php endif; ?>
-      <?php $cartCount = function_exists('cart_ids') ? count(cart_ids()) : 0; ?>
+      <?php $cartCount = function_exists('cart_books') ? count(cart_books()) : 0; ?>
       <a class="nav-cart" href="<?= e(url('mandje.php')) ?>"
          aria-label="Winkelmandje<?= $cartCount > 0 ? ' (' . $cartCount . ' publicaties)' : '' ?>">
         <?= cart_icon_svg() ?>

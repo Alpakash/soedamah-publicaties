@@ -7,7 +7,7 @@ Log in met het beheerwachtwoord.
 
 1. Klik op **+ Nieuwe publicatie**.
 2. Vul de **titel**, eventueel een ondertitel, en de **beschrijving** in.
-   Een lege regel in de beschrijving begint een nieuwe alinea.
+   Gebruik de knoppen boven het tekstvak voor opmaak (vet, cursief, lijsten, links).
 3. Vul de **prijs** in, bijvoorbeeld `12,50`. Vul `0` in om de publicatie
    gratis aan te bieden.
 4. Upload de bestanden:
@@ -18,13 +18,15 @@ Log in met het beheerwachtwoord.
 6. Klik op **Bekijk de pagina in de shop** om het resultaat te controleren.
 
 Tip: wil je een boek alvast aankondigen? Zet het online zónder bestanden —
-bezoekers zien dan "Verschijnt binnenkort" en kunnen nog niet bestellen.
-Upload de bestanden op de verschijningsdatum.
+bezoekers zien dan "Nog niet beschikbaar" en kunnen nog niet bestellen.
+Upload de bestanden zodra het boek klaar is.
 
 ## Een boek aanpassen of offline halen
 
 - **Bewerken** → pas tekst, prijs of bestanden aan → **Opslaan**.
 - Offline halen: zet het vinkje **Zichtbaar in de shop** uit.
+- Tijdelijk niet bestelbaar, maar wel zichtbaar: zet het vinkje **Op voorraad** uit.
+  Bezoekers zien dan "Niet op voorraad" in plaats van de koopknop.
 - **Verwijderen** is definitief en haalt ook de bestanden weg; eerdere kopers
   kunnen dan niet meer downloaden. Meestal is offline halen beter.
 

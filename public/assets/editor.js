@@ -27,6 +27,13 @@
     var uploadUrl = root.getAttribute('data-upload-url');
     var csrfToken = root.getAttribute('data-csrf');
 
+    // JavaScript werkt: toon de echte tekstverwerker en verberg het gewone
+    // tekstveld dat zonder JavaScript als werkende terugval dient.
+    area.innerHTML = hidden.value;
+    toolbar.hidden = false;
+    area.hidden = false;
+    hidden.hidden = true;
+
     function syncHidden() {
       hidden.value = area.innerHTML;
     }

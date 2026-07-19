@@ -6,6 +6,7 @@ if ($book === null || !(int) $book['published'] || (int) $book['price_cents'] > 
     redirect(url());
 }
 if (!book_orderable($book)) {
+    // De boekpagina toont zelf al waarom de publicatie niet (meer) besteld kan worden.
     redirect(url('boek.php?b=' . $book['slug']));
 }
 
@@ -17,20 +18,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (trim((string) ($_POST['website'] ?? '')) !== '') {
         redirect(url());
     }
-    $email = trim((string) ($_POST['email'] ?? ''));
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Vul een geldig e-mailadres in.';
+    // Simpele bot-drempel: een echte bezoeker heeft het formulier nooit binnen
+    // een paar seconden na het laden al verzonden.
+    $renderedAt = (int) ($_POST['form_rendered_at'] ?? 0);
+    if ($renderedAt <= 0 || time() - $renderedAt < 3) {
+        $error = 'Dat ging te snel — probeer het formulier nogmaals te versturen.';
     } else {
-        // Bestaande gratis bestelling voor dit adres hergebruiken in plaats van stapelen.
-        $stmt = db()->prepare(
-            "SELECT * FROM orders WHERE book_id = ? AND email = ? AND status = 'free' ORDER BY id DESC LIMIT 1"
-        );
-        $stmt->execute([$book['id'], $email]);
-        $order = $stmt->fetch() ?: null;
-        if ($order === null) {
-            $order = order_create($book, 'free', $email);
-            order_send_links($order);
-            order_notify_admin($order);
+        $email = trim((string) ($_POST['email'] ?? ''));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Vul een geldig e-mailadres in.';
+        } else {
+            // Bestaande gratis bestelling voor dit adres hergebruiken in plaats van stapelen.
+            $stmt = db()->prepare(
+                "SELECT * FROM orders WHERE book_id = ? AND email = ? AND status = 'free' ORDER BY id DESC LIMIT 1"
+            );
+            $stmt->execute([$book['id'], $email]);
+            $order = $stmt->fetch() ?: null;
+            if ($order === null) {
+                $order = order_create($book, 'free', $email);
+                order_send_links($order);
+                order_notify_admin($order);
+            }
         }
     }
 }
@@ -63,6 +71,7 @@ include APP_ROOT . '/app/templates/header.php';
     <?php endif; ?>
     <form method="post" action="<?= e(url('gratis.php')) ?>" class="stacked-form">
       <input type="hidden" name="b" value="<?= e($book['slug']) ?>">
+      <input type="hidden" name="form_rendered_at" value="<?= time() ?>">
       <p class="hp-field" aria-hidden="true">
         <label>Laat dit veld leeg <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
       </p>

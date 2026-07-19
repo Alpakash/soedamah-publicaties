@@ -9,6 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($book !== null && (int) $book['published'] === 1
             && (int) $book['price_cents'] > 0 && book_orderable($book)) {
             cart_store(array_merge(cart_ids(), [$id]));
+        } else {
+            redirect(url('mandje.php') . '?niet_beschikbaar=1');
         }
     } elseif ($action === 'remove' && $id > 0) {
         cart_store(array_diff(cart_ids(), [$id]));
@@ -27,6 +29,13 @@ include APP_ROOT . '/app/templates/header.php';
 ?>
 <div class="cart-page">
   <h1>Winkelmandje</h1>
+
+  <?php if (isset($_GET['niet_beschikbaar'])): ?>
+    <p class="alert alert-error">Deze publicatie is niet meer beschikbaar en kon niet aan je mandje worden toegevoegd.</p>
+  <?php endif; ?>
+  <?php if (isset($_GET['gewijzigd'])): ?>
+    <p class="alert alert-error">Een publicatie uit je mandje is niet meer beschikbaar en is verwijderd.</p>
+  <?php endif; ?>
 
   <?php if ($books === []): ?>
     <div class="empty-state">

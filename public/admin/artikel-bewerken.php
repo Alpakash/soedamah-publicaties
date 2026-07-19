@@ -69,7 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($title === '') {
             $errors[] = 'Vul een titel in.';
         }
-        if ($articleDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $articleDate)) {
+        if ($articleDate === '' || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $articleDate, $dateParts)
+            || !checkdate((int) $dateParts[2], (int) $dateParts[3], (int) $dateParts[1])) {
             $errors[] = 'Vul een geldige datum in.';
         }
         if ($bodyHtml === '') {
@@ -174,7 +175,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
 
   <label for="editor-area">Tekst *</label>
   <div class="rich-editor" data-upload-url="<?= e(url('admin/artikel-upload.php')) ?>" data-csrf="<?= e(csrf_token()) ?>">
-    <div class="editor-toolbar">
+    <div class="editor-toolbar" hidden>
       <button type="button" data-cmd="bold" title="Vet"><strong>V</strong></button>
       <button type="button" data-cmd="italic" title="Cursief"><em>I</em></button>
       <span class="editor-sep"></span>
@@ -190,11 +191,12 @@ include APP_ROOT . '/app/templates/admin_header.php';
       <button type="button" data-cmd="insertImage" title="Afbeelding invoegen">Afbeelding</button>
       <button type="button" data-cmd="insertVideo" title="YouTube/Vimeo-video invoegen">Video</button>
     </div>
-    <div id="editor-area" class="editor-area" contenteditable="true"><?= $bodyHtmlValue ?></div>
+    <div id="editor-area" class="editor-area" contenteditable="true" hidden><?= $bodyHtmlValue ?></div>
     <input type="file" class="editor-file-input" accept="image/jpeg,image/png,image/webp" hidden>
-    <textarea name="body_html" class="editor-hidden-field" hidden><?= e($bodyHtmlValue) ?></textarea>
+    <textarea name="body_html" class="editor-hidden-field" rows="14"><?= e($bodyHtmlValue) ?></textarea>
   </div>
-  <p class="field-hint">Afbeeldingen en video's die je hier invoegt, komen bij de tekst zelf te staan.</p>
+  <p class="field-hint">Afbeeldingen en video's die je hier invoegt, komen bij de tekst zelf te staan.
+     (Werkt JavaScript niet? Typ dan gewoon in het tekstvak hierboven.)</p>
 
   <label class="checkbox-line">
     <input type="checkbox" name="published" value="1" <?= $publishedChecked ? 'checked' : '' ?>>

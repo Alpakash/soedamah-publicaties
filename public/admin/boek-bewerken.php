@@ -183,10 +183,12 @@ include APP_ROOT . '/app/templates/admin_header.php';
 
 <?php if ($saved): ?>
   <p class="alert alert-success">Opgeslagen!
-    <?php if ($book !== null && (int) $book['published'] && book_has_files($book)): ?>
+    <?php if ($book !== null && (int) $book['published'] && book_orderable($book)): ?>
       <a href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">Bekijk de pagina in de shop.</a>
     <?php elseif ($book !== null && (int) $book['published'] && !book_has_files($book)): ?>
       Let op: er is nog geen PDF of EPUB geüpload, bezoekers kunnen dit boek zien maar nog niet bestellen.
+    <?php elseif ($book !== null && (int) $book['published'] && !(int) $book['in_stock']): ?>
+      Let op: dit boek staat op "niet op voorraad", bezoekers zien het boek maar kunnen het niet bestellen.
     <?php endif; ?>
   </p>
 <?php endif; ?>
@@ -206,7 +208,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
 
   <label for="description-area">Beschrijving</label>
   <div class="rich-editor">
-    <div class="editor-toolbar">
+    <div class="editor-toolbar" hidden>
       <button type="button" data-cmd="bold" title="Vet"><strong>V</strong></button>
       <button type="button" data-cmd="italic" title="Cursief"><em>I</em></button>
       <span class="editor-sep"></span>
@@ -215,11 +217,12 @@ include APP_ROOT . '/app/templates/admin_header.php';
       <span class="editor-sep"></span>
       <button type="button" data-cmd="createLink" title="Link invoegen">Link</button>
     </div>
-    <div id="description-area" class="editor-area" contenteditable="true"><?= $descriptionValue ?></div>
+    <div id="description-area" class="editor-area" contenteditable="true" hidden><?= $descriptionValue ?></div>
     <input type="file" class="editor-file-input" hidden>
-    <textarea name="description" class="editor-hidden-field" hidden><?= e($descriptionValue) ?></textarea>
+    <textarea name="description" class="editor-hidden-field" rows="10"><?= e($descriptionValue) ?></textarea>
   </div>
-  <p class="field-hint">Waar gaat het boek over? Gebruik de knoppen voor opmaak.</p>
+  <p class="field-hint">Waar gaat het boek over? Gebruik de knoppen voor opmaak.
+     (Werkt JavaScript niet? Typ dan gewoon in het tekstvak hierboven.)</p>
 
   <div class="form-row">
     <div>

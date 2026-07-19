@@ -3,8 +3,10 @@ require __DIR__ . '/../app/bootstrap.php';
 
 $books = cart_books();
 if ($books === []) {
-    redirect(url('mandje.php'));
+    $wasPost = $_SERVER['REQUEST_METHOD'] === 'POST';
+    redirect(url('mandje.php') . ($wasPost ? '?gewijzigd=1' : ''));
 }
+$cartSnapshot = implode(',', array_map(static fn (array $b): int => (int) $b['id'], $books));
 
 $errors = [];
 $naam = trim((string) ($_POST['naam'] ?? ''));
@@ -14,6 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Honeypot: echte bezoekers laten dit veld leeg.
     if (trim((string) ($_POST['website'] ?? '')) !== '') {
         redirect(url());
+    }
+    if ((string) ($_POST['cart_snapshot'] ?? '') !== $cartSnapshot) {
+        $errors[] = 'Je mandje is gewijzigd sinds je deze pagina opende '
+            . '(een publicatie is niet meer beschikbaar). Controleer het overzicht hieronder '
+            . 'en klik nogmaals op "Doorgaan naar betalen".';
     }
     if ($naam === '') {
         $errors[] = 'Vul je naam in.';
@@ -98,6 +105,7 @@ include APP_ROOT . '/app/templates/header.php';
   <?php endforeach; ?>
 
   <form method="post" action="<?= e(url('afrekenen.php')) ?>" class="stacked-form">
+    <input type="hidden" name="cart_snapshot" value="<?= e($cartSnapshot) ?>">
     <p class="hp-field" aria-hidden="true">
       <label>Laat dit veld leeg <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
     </p>

@@ -47,6 +47,11 @@ function parse_price(string $input): int
     if (str_contains($s, ',')) {
         $s = str_replace('.', '', $s); // 1.250,50 -> 1250,50
         $s = str_replace(',', '.', $s);
+    } elseif (preg_match('/^\d{1,3}(\.\d{3})+$/', $s)) {
+        // Geen komma, maar wel groepjes van precies drie cijfers na de punt(en):
+        // dat is een duizendtalnotatie ("2.500" = tweeduizend vijfhonderd),
+        // geen decimaal bedrag (een prijs heeft nooit 3 cijfers achter de komma).
+        $s = str_replace('.', '', $s);
     }
     if (!is_numeric($s) || (float) $s < 0) {
         return -1;

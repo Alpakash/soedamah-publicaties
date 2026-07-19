@@ -58,36 +58,48 @@ function csrf_check(): void
 const LOGIN_MAX_ATTEMPTS = 8;
 const LOGIN_BLOCK_SECONDS = 900;
 
-/** Aantal seconden dat inloggen nog geblokkeerd is (0 = niet geblokkeerd). */
+/**
+ * Beste inschatting van het IP-adres van de bezoeker. Deze site draait achter
+ * Plesk/nginx, dat REMOTE_ADDR correct doorgeeft; er wordt bewust geen
+ * X-Forwarded-For-header vertrouwd (die is door de bezoeker zelf te vervalsen).
+ */
+function client_ip(): string
+{
+    return (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+}
+
+/** Aantal seconden dat inloggen vanaf dit IP-adres nog geblokkeerd is (0 = niet geblokkeerd). */
 function login_blocked_seconds(): int
 {
-    $raw = setting_get('login_throttle');
-    if ($raw === null) {
-        return 0;
-    }
-    $data = json_decode($raw, true);
-    if (!is_array($data)) {
-        return 0;
-    }
-    $until = (int) ($data['blocked_until'] ?? 0);
+    $stmt = db()->prepare('SELECT blocked_until FROM login_attempts WHERE ip = ?');
+    $stmt->execute([client_ip()]);
+    $until = (int) $stmt->fetchColumn();
     return $until > time() ? $until - time() : 0;
 }
 
 function login_register_failure(): void
 {
-    $raw = setting_get('login_throttle');
-    $data = is_string($raw) ? (json_decode($raw, true) ?: []) : [];
-    $count = (int) ($data['count'] ?? 0) + 1;
-    $blockedUntil = (int) ($data['blocked_until'] ?? 0);
+    $ip = client_ip();
+    $stmt = db()->prepare('SELECT count, blocked_until FROM login_attempts WHERE ip = ?');
+    $stmt->execute([$ip]);
+    $row = $stmt->fetch();
+    $count = ((int) ($row['count'] ?? 0)) + 1;
+    $blockedUntil = (int) ($row['blocked_until'] ?? 0);
     if ($count >= LOGIN_MAX_ATTEMPTS) {
         $blockedUntil = time() + LOGIN_BLOCK_SECONDS;
         $count = 0;
-        log_msg('Inloggen beheer geblokkeerd na te veel mislukte pogingen.');
+        log_msg('Inloggen beheer geblokkeerd voor ' . $ip . ' na te veel mislukte pogingen.');
     }
-    setting_set('login_throttle', (string) json_encode(['count' => $count, 'blocked_until' => $blockedUntil]));
+    db()->prepare(
+        'INSERT INTO login_attempts (ip, count, blocked_until, updated_at) VALUES (?, ?, ?, ?)
+         ON CONFLICT(ip) DO UPDATE SET count = excluded.count, blocked_until = excluded.blocked_until, updated_at = excluded.updated_at'
+    )->execute([$ip, $count, $blockedUntil, now()]);
+
+    // Oude, niet-geblokkeerde rijen opruimen zodat de tabel niet blijft groeien.
+    db()->exec("DELETE FROM login_attempts WHERE blocked_until = 0 AND updated_at < datetime('now', '-1 day')");
 }
 
 function login_register_success(): void
 {
-    setting_set('login_throttle', (string) json_encode(['count' => 0, 'blocked_until' => 0]));
+    db()->prepare('DELETE FROM login_attempts WHERE ip = ?')->execute([client_ip()]);
 }

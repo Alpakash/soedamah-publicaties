@@ -776,6 +776,9 @@ legend { font-weight: 700; padding: 0 0.5rem; }
   overflow: hidden;
   margin-top: 0.3rem;
 }
+/* Zonder JavaScript blijft alleen het gewone tekstveld zichtbaar en bruikbaar;
+   editor.js onthult de eigenlijke tekstverwerker pas zodra hij daadwerkelijk draait. */
+.rich-editor [hidden] { display: none !important; }
 .editor-toolbar {
   display: flex;
   flex-wrap: wrap;
