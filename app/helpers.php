@@ -80,7 +80,7 @@ function random_token(): string
 function format_datetime(?string $utc): string
 {
     if (!$utc) {
-        return '—';
+        return '-';
     }
     try {
         $dt = new DateTime($utc, new DateTimeZone('UTC'));
@@ -103,7 +103,7 @@ function cart_icon_svg(): string
 function format_date(?string $utc): string
 {
     if (!$utc) {
-        return '—';
+        return '-';
     }
     try {
         $dt = new DateTime($utc, new DateTimeZone('UTC'));

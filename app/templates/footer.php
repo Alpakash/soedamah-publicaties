@@ -4,7 +4,7 @@
     <div>
       <p class="footer-brand">Lachman Soedamah · Publicaties</p>
       <p>Boeken en essays over Suriname, het volkenrecht en de
-         Hindostaanse gemeenschap — rechtstreeks van de auteur.</p>
+         Hindostaanse gemeenschap, rechtstreeks van de auteur.</p>
       <p><a href="<?= e(url('artikelen.php')) ?>">Artikelen &amp; beschouwingen</a></p>
     </div>
     <div>

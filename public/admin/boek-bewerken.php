@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Vul een titel in.';
         }
         if ($priceCents < 0) {
-            $errors[] = 'De prijs is ongeldig. Gebruik bijvoorbeeld 12,50 — of 0 voor gratis.';
+            $errors[] = 'De prijs is ongeldig. Gebruik bijvoorbeeld 12,50 (of 0 voor gratis).';
             $priceCents = 0;
         }
 
@@ -225,7 +225,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
     <div>
       <label for="price">Prijs in euro's *</label>
       <input type="text" id="price" name="price" inputmode="decimal" value="<?= e($priceValue) ?>">
-      <p class="field-hint">Bijvoorbeeld 12,50 — vul 0 in voor een gratis publicatie.</p>
+      <p class="field-hint">Bijvoorbeeld 12,50, vul 0 in voor een gratis publicatie.</p>
     </div>
     <div>
       <label for="sort_order">Volgorde</label>

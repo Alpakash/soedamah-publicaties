@@ -9,7 +9,7 @@ $isNewBook = static function (array $book): bool {
 };
 
 $pageTitle = 'Boeken en essays van Lachman Soedamah';
-$metaDescription = 'Boeken en essays van mr. dr. Lachman Soedamah — over Suriname, het volkenrecht en de Hindostaanse gemeenschap. Direct te downloaden als PDF of EPUB.';
+$metaDescription = 'Boeken en essays van mr. dr. Lachman Soedamah over Suriname, het volkenrecht en de Hindostaanse gemeenschap. Direct te downloaden als PDF of EPUB.';
 if ($featured !== null && $featured['cover_file'] !== '') {
     $ogImage = url('cover.php?b=' . $featured['id']);
 }
@@ -20,8 +20,7 @@ include APP_ROOT . '/app/templates/header.php';
     <p class="kicker">Boeken &amp; essays · rechtstreeks van de auteur</p>
     <h1>Publicaties van<br>Lachman Soedamah</h1>
     <p class="hero-lead">Over Suriname en het volkenrecht, de erfenis van de Hindostaanse
-       contractarbeid en de vraag wat integer leiderschap betekent.
-       Direct te downloaden als PDF of EPUB.</p>
+       contractarbeid en de vraag wat integer leiderschap betekent.</p>
     <p class="hero-actions">
       <a class="btn btn-primary btn-large" href="#publicaties">Bekijk de publicaties</a>
       <a class="btn btn-ghost" href="#over-de-auteur">Over de auteur</a>
@@ -54,7 +53,7 @@ include APP_ROOT . '/app/templates/header.php';
       </a>
     <?php else: ?>
       <span class="cover-frame portrait-frame">
-        <img class="portrait" src="<?= e(url('assets/auteur.jpg')) ?>" alt="Portret van Lachman Soedamah">
+        <img class="portrait" src="<?= e(url('assets/LSoedamah.jpeg')) ?>" alt="Portret van Lachman Soedamah">
       </span>
       <p class="hero-book-caption"><strong>mr. dr. Lachman Soedamah</strong>
         <span>advocaat &amp; auteur</span></p>
@@ -109,7 +108,7 @@ include APP_ROOT . '/app/templates/header.php';
 
 <section id="over-de-auteur" class="author-band">
   <div class="author-photo">
-    <img src="<?= e(url('assets/auteur.jpg')) ?>" alt="Portret van mr. dr. Lachman Soedamah">
+    <img src="<?= e(url('assets/LSoedamah.jpeg')) ?>" alt="Portret van mr. dr. Lachman Soedamah">
   </div>
   <div class="author-text">
     <h2 class="section-title">Over de auteur</h2>
@@ -129,7 +128,7 @@ include APP_ROOT . '/app/templates/header.php';
     <blockquote class="author-quote">
       <p>„Leiderschap wordt uiteindelijk niet beoordeeld op afkomst, maar op integriteit.
          Niet op retoriek, maar op resultaten."</p>
-      <cite>— Lachman Soedamah</cite>
+      <cite>Lachman Soedamah</cite>
     </blockquote>
   </div>
 </section>

@@ -36,7 +36,7 @@ include APP_ROOT . '/app/templates/header.php';
 </article>
 
 <aside class="author-mini">
-  <img src="<?= e(url('assets/auteur.jpg')) ?>" alt="Portret van Lachman Soedamah">
+  <img src="<?= e(url('assets/LSoedamah.jpeg')) ?>" alt="Portret van Lachman Soedamah">
   <div>
     <p class="author-mini-name">Geschreven door</p>
     <p><strong>Mr. dr. Lachman Soedamah</strong> is advocaat in Amsterdam en schrijft over
