@@ -33,6 +33,8 @@ include APP_ROOT . '/app/templates/header.php';
         <span class="cover-frame">
           <?php if (!book_has_files($featured)): ?>
             <span class="badge-floating">Binnenkort</span>
+          <?php elseif (!book_orderable($featured)): ?>
+            <span class="badge-floating">Niet op voorraad</span>
           <?php elseif ($isNewBook($featured)): ?>
             <span class="badge-floating">Nieuw</span>
           <?php endif; ?>
@@ -75,6 +77,8 @@ include APP_ROOT . '/app/templates/header.php';
           <span class="cover-frame">
             <?php if (!book_has_files($book)): ?>
               <span class="badge-floating">Binnenkort</span>
+            <?php elseif (!book_orderable($book)): ?>
+              <span class="badge-floating">Niet op voorraad</span>
             <?php elseif ($isNewBook($book)): ?>
               <span class="badge-floating">Nieuw</span>
             <?php endif; ?>
@@ -127,8 +131,6 @@ include APP_ROOT . '/app/templates/header.php';
          Niet op retoriek, maar op resultaten."</p>
       <cite>— Lachman Soedamah</cite>
     </blockquote>
-    <p>Zijn boeken en essays verschijnen op deze pagina rechtstreeks van de auteur;
-       zijn artikelen lees je op <a href="https://soedamah.nl/publicaties">soedamah.nl/publicaties</a>.</p>
   </div>
 </section>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>

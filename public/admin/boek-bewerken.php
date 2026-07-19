@@ -97,9 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         csrf_check();
         $title       = trim((string) ($_POST['title'] ?? ''));
         $subtitle    = trim((string) ($_POST['subtitle'] ?? ''));
-        $description = trim((string) ($_POST['description'] ?? ''));
+        $description = sanitize_article_html((string) ($_POST['description'] ?? ''));
         $priceCents  = parse_price((string) ($_POST['price'] ?? '0'));
         $published   = !empty($_POST['published']) ? 1 : 0;
+        $inStock     = !empty($_POST['in_stock']) ? 1 : 0;
         $sortOrder   = (int) ($_POST['sort_order'] ?? 0);
 
         if ($title === '') {
@@ -113,20 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             if ($book === null) {
                 $stmt = db()->prepare(
-                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, sort_order, created_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, sort_order, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
                     book_unique_slug($title),
-                    $title, $subtitle, $description, $priceCents, $published, $sortOrder, now(),
+                    $title, $subtitle, $description, $priceCents, $published, $inStock, $sortOrder, now(),
                 ]);
                 $book = book_find((int) db()->lastInsertId());
             } else {
                 $stmt = db()->prepare(
-                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, sort_order = ?
+                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, sort_order = ?
                      WHERE id = ?'
                 );
-                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $sortOrder, $book['id']]);
+                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $sortOrder, $book['id']]);
                 $book = book_find((int) $book['id']);
             }
 
@@ -163,12 +164,18 @@ $formValue = static function (string $field, string $default = '') use ($book): 
     }
     return $book !== null ? (string) $book[$field] : $default;
 };
+$descriptionValue = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['description'])
+    ? sanitize_article_html((string) $_POST['description'])
+    : (string) ($book['description'] ?? '');
 $priceValue = isset($_POST['price'])
     ? (string) $_POST['price']
     : ($book !== null ? number_format(((int) $book['price_cents']) / 100, 2, ',', '') : '0');
 $publishedChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
     ? !empty($_POST['published'])
     : ($book !== null && (int) $book['published'] === 1);
+$inStockChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? !empty($_POST['in_stock'])
+    : ($book === null || (int) $book['in_stock'] === 1);
 
 $pageTitle = $isNew ? 'Nieuwe publicatie' : 'Bewerken: ' . $book['title'];
 include APP_ROOT . '/app/templates/admin_header.php';
@@ -198,9 +205,22 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <label for="subtitle">Ondertitel</label>
   <input type="text" id="subtitle" name="subtitle" maxlength="200" value="<?= e($formValue('subtitle')) ?>">
 
-  <label for="description">Beschrijving</label>
-  <textarea id="description" name="description" rows="10"
-            placeholder="Waar gaat het boek over? Een lege regel begint een nieuwe alinea."><?= e($formValue('description')) ?></textarea>
+  <label for="description-area">Beschrijving</label>
+  <div class="rich-editor">
+    <div class="editor-toolbar">
+      <button type="button" data-cmd="bold" title="Vet"><strong>V</strong></button>
+      <button type="button" data-cmd="italic" title="Cursief"><em>I</em></button>
+      <span class="editor-sep"></span>
+      <button type="button" data-cmd="insertUnorderedList" title="Opsomming">• Lijst</button>
+      <button type="button" data-cmd="insertOrderedList" title="Genummerde lijst">1. Lijst</button>
+      <span class="editor-sep"></span>
+      <button type="button" data-cmd="createLink" title="Link invoegen">Link</button>
+    </div>
+    <div id="description-area" class="editor-area" contenteditable="true"><?= $descriptionValue ?></div>
+    <input type="file" class="editor-file-input" hidden>
+    <textarea name="description" class="editor-hidden-field" hidden><?= e($descriptionValue) ?></textarea>
+  </div>
+  <p class="field-hint">Waar gaat het boek over? Gebruik de knoppen voor opmaak.</p>
 
   <div class="form-row">
     <div>
@@ -250,6 +270,13 @@ include APP_ROOT . '/app/templates/admin_header.php';
     Zichtbaar in de shop
   </label>
 
+  <label class="checkbox-line">
+    <input type="checkbox" name="in_stock" value="1" <?= $inStockChecked ? 'checked' : '' ?>>
+    Op voorraad
+  </label>
+  <p class="field-hint">Zet dit uit om de publicatie zichtbaar te houden maar tijdelijk niet
+     bestelbaar te maken (toont "Niet op voorraad" in plaats van de koopknop).</p>
+
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Opslaan</button>
     <a class="btn btn-secondary" href="<?= e(url('admin/')) ?>">Terug naar overzicht</a>
@@ -258,4 +285,5 @@ include APP_ROOT . '/app/templates/admin_header.php';
     <?php endif; ?>
   </div>
 </form>
+<script src="<?= e(asset_url('assets/editor.js')) ?>"></script>
 <?php include APP_ROOT . '/app/templates/admin_footer.php'; ?>

@@ -58,6 +58,9 @@ include APP_ROOT . '/app/templates/admin_header.php';
           <?php else: ?>
             <span class="badge">Concept</span>
           <?php endif; ?>
+          <?php if ((int) $book['published'] && !(int) $book['in_stock']): ?>
+            <span class="badge">Niet op voorraad</span>
+          <?php endif; ?>
         </td>
         <td class="actions">
           <a class="btn btn-small btn-secondary" href="<?= e(url('admin/boek-bewerken.php?id=' . $book['id'])) ?>">Bewerken</a>

@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'add' && $id > 0) {
         $book = book_find($id);
         if ($book !== null && (int) $book['published'] === 1
-            && (int) $book['price_cents'] > 0 && book_has_files($book)) {
+            && (int) $book['price_cents'] > 0 && book_orderable($book)) {
             cart_store(array_merge(cart_ids(), [$id]));
         }
     } elseif ($action === 'remove' && $id > 0) {

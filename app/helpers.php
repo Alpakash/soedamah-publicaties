@@ -76,20 +76,6 @@ function random_token(): string
     return bin2hex(random_bytes(20));
 }
 
-/** Platte tekst met witregels omzetten naar veilige HTML-alinea's. */
-function text_to_html(string $text): string
-{
-    $paragraphs = preg_split('/\R{2,}/u', trim($text)) ?: [];
-    $html = '';
-    foreach ($paragraphs as $p) {
-        if (trim($p) === '') {
-            continue;
-        }
-        $html .= '<p>' . nl2br(e(trim($p))) . '</p>' . "\n";
-    }
-    return $html;
-}
-
 /** UTC-tijd uit de database tonen in Nederlandse tijd. */
 function format_datetime(?string $utc): string
 {

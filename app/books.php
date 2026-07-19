@@ -36,6 +36,11 @@ function book_has_files(array $book): bool
     return $book['pdf_file'] !== '' || $book['epub_file'] !== '';
 }
 
+function book_orderable(array $book): bool
+{
+    return book_has_files($book) && (int) $book['in_stock'] === 1;
+}
+
 function book_formats_label(array $book): string
 {
     $formats = [];

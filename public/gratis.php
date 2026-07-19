@@ -5,7 +5,7 @@ $book = book_find_by_slug((string) ($_GET['b'] ?? ($_POST['b'] ?? '')));
 if ($book === null || !(int) $book['published'] || (int) $book['price_cents'] > 0) {
     redirect(url());
 }
-if (!book_has_files($book)) {
+if (!book_orderable($book)) {
     redirect(url('boek.php?b=' . $book['slug']));
 }
 

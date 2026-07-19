@@ -13,7 +13,7 @@ if ($book === null || !(int) $book['published']) {
 }
 
 $pageTitle = $book['title'];
-$metaDescription = mb_substr(trim(preg_replace('/\s+/u', ' ', $book['description']) ?? ''), 0, 155);
+$metaDescription = article_excerpt_from_body($book['description'], 155);
 if ($book['cover_file'] !== '') {
     $ogImage = url('cover.php?b=' . $book['id']);
 }
@@ -49,6 +49,8 @@ include APP_ROOT . '/app/templates/header.php';
       </p>
       <?php if (!book_has_files($book)): ?>
         <p class="muted">Deze publicatie verschijnt binnenkort en is nog niet te bestellen.</p>
+      <?php elseif (!book_orderable($book)): ?>
+        <p class="muted">Deze publicatie is tijdelijk niet op voorraad.</p>
       <?php elseif ($isFree): ?>
         <a class="btn btn-primary" href="<?= e(url('gratis.php?b=' . $book['slug'])) ?>">Gratis downloaden</a>
         <p class="buy-note">Je ontvangt de downloadlink direct en per e-mail.</p>
@@ -68,7 +70,7 @@ include APP_ROOT . '/app/templates/header.php';
     </div>
 
     <div class="book-description">
-      <?= text_to_html($book['description']) ?>
+      <?= $book['description'] ?>
     </div>
   </div>
 </article>
