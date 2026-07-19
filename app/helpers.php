@@ -32,7 +32,7 @@ function format_price(int $cents): string
     if ($cents <= 0) {
         return 'Gratis';
     }
-    return '€ ' . number_format($cents / 100, 2, ',', '.');
+    return "€\u{00A0}" . number_format($cents / 100, 2, ',', '.');
 }
 
 /**
