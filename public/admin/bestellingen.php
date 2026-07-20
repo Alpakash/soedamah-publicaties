@@ -18,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$order['id']]);
         $refreshed = order_find((int) $order['id']);
         $msg = ($refreshed !== null && order_send_links($refreshed)) ? 'mailok' : 'mailfout';
+    } elseif ($order !== null && $action === 'delete') {
+        $stmt = db()->prepare('DELETE FROM orders WHERE id = ?');
+        $stmt->execute([$order['id']]);
+        $msg = 'verwijderd';
     }
     redirect(url('admin/bestellingen.php' . ($msg !== '' ? '?msg=' . $msg : '')));
 }
@@ -42,6 +46,8 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <p class="alert alert-success">De e-mail met downloadlinks is opnieuw verstuurd.</p>
 <?php elseif (($_GET['msg'] ?? '') === 'mailfout'): ?>
   <p class="alert alert-error">De e-mail kon niet worden verstuurd. Controleer het e-mailadres van de bestelling.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'verwijderd'): ?>
+  <p class="alert alert-success">De bestelling is verwijderd.</p>
 <?php endif; ?>
 
 <?php if (!$orders): ?>
@@ -109,6 +115,13 @@ include APP_ROOT . '/app/templates/admin_header.php';
             </form>
             <?php endif; ?>
           <?php endif; ?>
+          <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form"
+                onsubmit="return confirm('Deze bestelling definitief verwijderen?\n\n<?= e(addslashes($order['book_title'])) ?> — <?= e(addslashes($order['name'] !== '' ? $order['name'] : ($order['email'] !== '' ? $order['email'] : 'onbekend'))) ?>\n\nDit kan niet ongedaan worden gemaakt.');">
+            <?= csrf_field() ?>
+            <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
+            <input type="hidden" name="action" value="delete">
+            <button type="submit" class="btn btn-small btn-danger" title="Verwijder deze bestelling (bijv. een testbetaling)">Verwijderen</button>
+          </form>
         </td>
       </tr>
       <?php endforeach; ?>
