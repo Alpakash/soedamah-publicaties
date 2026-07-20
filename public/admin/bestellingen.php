@@ -74,6 +74,11 @@ include APP_ROOT . '/app/templates/admin_header.php';
           <?php if ($order['shipping_address'] !== ''): ?>
             <br><span class="muted"><?= nl2br(e($order['shipping_address'])) ?></span>
           <?php endif; ?>
+          <?php if (!empty($order['consent_at'])): ?>
+            <br><span class="muted" title="Akkoord algemene voorwaarden<?= !empty($order['withdrawal_waived']) ? ' + afstand herroepingsrecht (onmiddellijke levering e-book)' : '' ?>">
+              ✓ Akkoord voorwaarden<?= !empty($order['withdrawal_waived']) ? ' + herroeping' : '' ?>
+              (<?= e(format_datetime($order['consent_at'])) ?>)</span>
+          <?php endif; ?>
         </td>
         <td class="nowrap"><?= e(format_price((int) $order['amount_cents'])) ?></td>
         <td><span class="badge <?= e($badgeClass) ?>"><?= e($label) ?></span></td>

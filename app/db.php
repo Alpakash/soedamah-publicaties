@@ -77,6 +77,8 @@ CREATE TABLE IF NOT EXISTS orders (
     expires_at        TEXT,
     email_sent_at     TEXT,
     shipping_address  TEXT NOT NULL DEFAULT '',
+    consent_at        TEXT NOT NULL DEFAULT '',
+    withdrawal_waived INTEGER NOT NULL DEFAULT 0,
     created_at        TEXT NOT NULL,
     paid_at           TEXT
 )
@@ -129,6 +131,15 @@ SQL);
     }
     if (!in_array('shipping_address', $orderColumns, true)) {
         $pdo->exec("ALTER TABLE orders ADD COLUMN shipping_address TEXT NOT NULL DEFAULT ''");
+    }
+    // Migratie voor bestaande databases: tijdstip waarop de koper akkoord ging met de
+    // algemene voorwaarden en (bij e-books) instemde met onmiddellijke levering onder
+    // afstand van het herroepingsrecht. Leeg = geen instemming vastgelegd.
+    if (!in_array('consent_at', $orderColumns, true)) {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN consent_at TEXT NOT NULL DEFAULT ''");
+    }
+    if (!in_array('withdrawal_waived', $orderColumns, true)) {
+        $pdo->exec('ALTER TABLE orders ADD COLUMN withdrawal_waived INTEGER NOT NULL DEFAULT 0');
     }
 
     // Migratie voor bestaande databases: voorraadstatus en fysieke uitgaven per publicatie.

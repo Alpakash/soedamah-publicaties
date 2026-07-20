@@ -10,7 +10,8 @@
     <div>
       <p class="footer-heading">Elders</p>
       <p><a href="https://soedamah.nl">soedamah.nl</a><br>
-         <a href="https://soedamah.nl/contact/">Contact</a></p>
+         <a href="https://soedamah.nl/contact/">Contact</a><br>
+         <a href="<?= e(url('voorwaarden.php')) ?>">Algemene Voorwaarden</a></p>
     </div>
   </div>
   <div class="wrap footer-bottom">
