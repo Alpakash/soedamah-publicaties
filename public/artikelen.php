@@ -8,7 +8,7 @@ include APP_ROOT . '/app/templates/header.php';
 ?>
 <section class="intro">
   <h1>Artikelen</h1>
-  <p>Beschouwingen van Lachman Soedamah over Suriname, recht en de Hindostaanse gemeenschap.</p>
+  <p>Beschouwingen over Suriname, recht, mens en maatschappij.</p>
 </section>
 
 <?php if (!$articles): ?>
