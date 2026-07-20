@@ -40,13 +40,15 @@ function order_create(
     string $email = '',
     string $name = '',
     ?string $sessionId = null,
-    string $shippingAddress = ''
+    string $shippingAddress = '',
+    string $consentAt = '',
+    bool $withdrawalWaived = false
 ): array {
     $stmt = db()->prepare(
         'INSERT INTO orders
             (book_id, book_title, email, name, stripe_session_id, amount_cents, status,
-             token, expires_at, created_at, paid_at, shipping_address)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+             token, expires_at, created_at, paid_at, shipping_address, consent_at, withdrawal_waived)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $stmt->execute([
         $book['id'],
@@ -61,6 +63,8 @@ function order_create(
         now(),
         $status === 'free' ? now() : null,
         $shippingAddress,
+        $consentAt,
+        $withdrawalWaived ? 1 : 0,
     ]);
     $order = order_find((int) db()->lastInsertId());
     if ($order === null) {

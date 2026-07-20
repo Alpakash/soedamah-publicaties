@@ -8,10 +8,12 @@ if ($books === []) {
 }
 $cartSnapshot = implode(',', array_map(static fn (array $b): int => (int) $b['id'], $books));
 $hasPhysical = false;
+$hasDigital = false;
 foreach ($books as $b) {
     if (book_is_physical($b)) {
         $hasPhysical = true;
-        break;
+    } else {
+        $hasDigital = true;
     }
 }
 
@@ -22,6 +24,13 @@ $straat = trim((string) ($_POST['straat'] ?? ''));
 $postcode = trim((string) ($_POST['postcode'] ?? ''));
 $plaats = trim((string) ($_POST['plaats'] ?? ''));
 $land = trim((string) ($_POST['land'] ?? ''));
+// Twee afzonderlijke instemmingsvakjes (consumentenrecht): akkoord met de
+// algemene voorwaarden en — bij een e-book — instemmen met onmiddellijke
+// levering onder afstand van het herroepingsrecht.
+$akkoordVoorwaarden = isset($_POST['akkoord_voorwaarden']);
+$akkoordLevering = isset($_POST['akkoord_levering']);
+$voorwaardenError = false;
+$leveringError = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Honeypot: echte bezoekers laten dit veld leeg.
@@ -47,8 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 . 'voor de gedrukte uitgave in je mandje.';
         }
     }
+    if (!$akkoordVoorwaarden) {
+        $errors[] = 'Ga akkoord met de algemene voorwaarden om verder te gaan.';
+        $voorwaardenError = true;
+    }
+    if ($hasDigital && !$akkoordLevering) {
+        $errors[] = 'Bevestig dat je instemt met onmiddellijke levering van het e-book en '
+            . 'afstand doet van je herroepingsrecht om verder te gaan.';
+        $leveringError = true;
+    }
 
     if (!$errors) {
+        $consentAt = now();
         $shippingAddress = $hasPhysical
             ? $naam . "\n" . $straat . "\n" . $postcode . ' ' . $plaats . "\n" . $land
             : '';
@@ -62,7 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $email,
                     $naam,
                     null,
-                    book_is_physical($item) ? $shippingAddress : ''
+                    book_is_physical($item) ? $shippingAddress : '',
+                    $consentAt,
+                    !book_is_physical($item) && $akkoordLevering
                 );
                 $lineItem = [
                     'quantity'   => 1,
@@ -168,6 +189,21 @@ include APP_ROOT . '/app/templates/header.php';
       <input type="text" id="land" name="land" required maxlength="100" autocomplete="country-name"
              value="<?= e($land !== '' ? $land : 'Nederland') ?>">
     <?php endif; ?>
+
+    <div class="consent-block">
+      <?php if ($hasDigital): ?>
+        <label class="consent-line<?= $leveringError ? ' consent-error' : '' ?>">
+          <input type="checkbox" name="akkoord_levering" value="1"<?= $akkoordLevering ? ' checked' : '' ?>>
+          <span>Ik stem uitdrukkelijk in met onmiddellijke levering van het e-book en verklaar dat ik
+            afstand doe van mijn wettelijke herroepingsrecht zodra de download beschikbaar is gesteld.</span>
+        </label>
+      <?php endif; ?>
+      <label class="consent-line<?= $voorwaardenError ? ' consent-error' : '' ?>">
+        <input type="checkbox" name="akkoord_voorwaarden" value="1"<?= $akkoordVoorwaarden ? ' checked' : '' ?>>
+        <span>Ik heb de <a href="<?= e(url('voorwaarden.php')) ?>" target="_blank" rel="noopener">Algemene
+          Voorwaarden</a> gelezen en ga hiermee akkoord.</span>
+      </label>
+    </div>
 
     <button type="submit" class="btn btn-primary btn-large">Doorgaan naar betalen</button>
   </form>
