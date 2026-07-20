@@ -244,7 +244,13 @@ function order_send_links(array $order): bool
 
 function orders_notify_admin(array $orders): void
 {
+    // Adres dat een melding krijgt bij elke bestelling. Instelbaar via config
+    // (admin_email); is dat leeg, dan valt hij terug op het vaste adres van de
+    // verkoper, zodat er altijd een melding van een verkochte aankoop binnenkomt.
     $admin = (string) config('admin_email', '');
+    if ($admin === '') {
+        $admin = 'soedamah@gmail.com';
+    }
     if ($orders === []) {
         return;
     }

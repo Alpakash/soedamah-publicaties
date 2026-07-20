@@ -20,8 +20,9 @@ return [
     'mail_from' => 'soedamah@soedamah.nl',
     'mail_from_name' => 'Lachman Soedamah',
 
-    // Dit adres ontvangt een melding bij elke bestelling (leeg = geen meldingen).
-    'admin_email' => '',
+    // Dit adres ontvangt een melding bij elke bestelling. Laat je dit leeg, dan
+    // gaat de melding automatisch naar soedamah@gmail.com.
+    'admin_email' => 'soedamah@gmail.com',
 
     // Voor bestellingen met een verzendadres (fysieke boeken) gaat de meldmail naar dit
     // adres i.p.v. naar admin_email, met admin_email in de CC. Leeg laten = gewoon naar
