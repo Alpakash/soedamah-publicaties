@@ -97,7 +97,7 @@ include APP_ROOT . '/app/templates/header.php';
     <p class="author-mini-name">Over de auteur</p>
     <p><strong>Mr. dr. Lachman Soedamah</strong> is advocaat in Amsterdam en promoveerde op
        <em>Suriname compleet?</em>, een volkenrechtelijke studie naar de Surinaamse
-       grensgeschillen. Hij schrijft over Suriname, recht en de Hindostaanse gemeenschap.
+       grensgeschillen. Hij schrijft over Suriname, recht, mens en maatschappij.
        <a href="<?= e(url('#over-de-auteur')) ?>">Lees meer →</a></p>
   </div>
 </aside>

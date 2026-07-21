@@ -41,7 +41,7 @@ include APP_ROOT . '/app/templates/header.php';
   <div>
     <p class="author-mini-name">Geschreven door</p>
     <p><strong>Mr. dr. Lachman Soedamah</strong> is advocaat in Amsterdam en schrijft over
-       Suriname, recht en de Hindostaanse gemeenschap.
+       Suriname, recht, mens en maatschappij.
        <a href="<?= e(url('#over-de-auteur')) ?>">Lees meer →</a></p>
   </div>
 </aside>
