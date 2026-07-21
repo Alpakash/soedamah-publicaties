@@ -23,7 +23,7 @@ include APP_ROOT . '/app/templates/header.php';
   </div>
   <div class="hero-visual">
     <?php if ($featured !== null): ?>
-      <a class="hero-book" href="<?= e(url('boek.php?b=' . $featured['slug'])) ?>">
+      <a class="hero-book" href="<?= e(book_url($featured['slug'])) ?>">
         <span class="cover-frame">
           <?php if (!book_has_deliverable($featured)): ?>
             <span class="badge-floating">Nog niet beschikbaar</span>
@@ -67,7 +67,7 @@ include APP_ROOT . '/app/templates/header.php';
   <?php else: ?>
     <div class="book-grid">
       <?php foreach ($books as $book): ?>
-        <a class="book-card" href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">
+        <a class="book-card" href="<?= e(book_url($book['slug'])) ?>">
           <span class="cover-frame">
             <?php if (!book_has_deliverable($book)): ?>
               <span class="badge-floating">Nog niet beschikbaar</span>

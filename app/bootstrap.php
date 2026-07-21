@@ -64,6 +64,31 @@ function url(string $path = ''): string
 }
 
 /**
+ * Nette, leesbare URL's voor de publieke pagina's (zonder .php-extensie of
+ * ?-parameter). De bijbehorende herschrijfregels staan in public/.htaccess;
+ * de oude ...php?slug-URL's blijven daarnaast gewoon werken.
+ */
+function book_url(string $slug): string
+{
+    return url('boek/' . rawurlencode($slug));
+}
+
+function article_url(string $slug): string
+{
+    return url('artikel/' . rawurlencode($slug));
+}
+
+function book_free_url(string $slug): string
+{
+    return url('gratis/' . rawurlencode($slug));
+}
+
+function articles_url(): string
+{
+    return url('artikelen');
+}
+
+/**
  * URL voor een statisch bestand, met de wijzigingsdatum als versienummer
  * zodat browsers na een update nooit een oude versie uit hun cache tonen.
  */

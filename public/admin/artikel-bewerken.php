@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             if ($published) {
                 $savedArticle = article_find($newId);
-                redirect(url('artikel.php?a=' . $savedArticle['slug']));
+                redirect(article_url($savedArticle['slug']));
             }
             redirect(url('admin/artikel-bewerken.php?id=' . $newId . '&saved=1'));
         }
@@ -140,7 +140,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
 <?php if ($saved): ?>
   <p class="alert alert-success">Opgeslagen!
     <?php if ($article !== null && (int) $article['published']): ?>
-      <a href="<?= e(url('artikel.php?a=' . $article['slug'])) ?>">Bekijk het artikel.</a>
+      <a href="<?= e(article_url($article['slug'])) ?>">Bekijk het artikel.</a>
     <?php endif; ?>
   </p>
 <?php endif; ?>

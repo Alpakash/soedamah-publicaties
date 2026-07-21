@@ -24,6 +24,10 @@ $isAdminVisitor = isset($_COOKIE['sp_admin']) && admin_logged_in();
 <?php endif; ?>
 <meta property="og:title" content="<?= e($pageTitle) ?> · Publicaties van Lachman Soedamah">
 <meta property="og:type" content="website">
+<?php if (!empty($canonicalUrl)): ?>
+<link rel="canonical" href="<?= e($canonicalUrl) ?>">
+<meta property="og:url" content="<?= e($canonicalUrl) ?>">
+<?php endif; ?>
 <?php if (!empty($ogImage)): ?>
 <meta property="og:image" content="<?= e($ogImage) ?>">
 <?php endif; ?>
@@ -39,7 +43,7 @@ $isAdminVisitor = isset($_COOKIE['sp_admin']) && admin_logged_in();
     </a>
     <nav class="site-nav">
       <a href="<?= e(url('#publicaties')) ?>">Boeken</a>
-      <a href="<?= e(url('artikelen.php')) ?>">Artikelen</a>
+      <a href="<?= e(articles_url()) ?>">Artikelen</a>
       <a href="<?= e(url('#over-de-auteur')) ?>">Over de auteur</a>
       <?php if ($isAdminVisitor): ?>
         <a href="<?= e(url('admin/')) ?>">Backoffice</a>

@@ -1,0 +1,28 @@
+# Nette URL's (zonder .php) voor de publieke pagina's.
+#
+#   /boek/<slug>      ->  boek.php?b=<slug>
+#   /artikel/<slug>   ->  artikel.php?a=<slug>
+#   /gratis/<slug>    ->  gratis.php?b=<slug>
+#   /artikelen        ->  artikelen.php
+#
+# De oude URL's met .php blijven daarnaast gewoon werken; de nette URL's zijn
+# alleen mooier voor bezoekers en zoekmachines. De herschrijving is intern:
+# de adresbalk verandert er niet door.
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Al bestaande bestanden en mappen (assets, admin/, .php-scripts) nooit herschrijven.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Nette URL -> echt script (intern; QSA behoudt eventuele extra querystring).
+RewriteRule ^boek/([A-Za-z0-9_-]+)/?$ boek.php?b=$1 [L,QSA]
+RewriteRule ^artikel/([A-Za-z0-9_-]+)/?$ artikel.php?a=$1 [L,QSA]
+RewriteRule ^gratis/([A-Za-z0-9_-]+)/?$ gratis.php?b=$1 [L,QSA]
+RewriteRule ^artikelen/?$ artikelen.php [L,QSA]
+</IfModule>

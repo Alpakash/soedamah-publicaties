@@ -389,7 +389,7 @@ function order_send_payment_reminder(array $orders): bool
         $titles[] = (string) $order['book_title'];
         $book = $order['book_id'] ? book_find((int) $order['book_id']) : null;
         if ($book !== null && !empty($book['slug'])) {
-            $links[] = $order['book_title'] . ': ' . url('boek.php?b=' . $book['slug']);
+            $links[] = $order['book_title'] . ': ' . book_url($book['slug']);
         }
     }
 

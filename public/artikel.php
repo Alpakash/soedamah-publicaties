@@ -7,19 +7,20 @@ if ($article === null || !(int) $article['published']) {
     $pageTitle = 'Niet gevonden';
     include APP_ROOT . '/app/templates/header.php';
     echo '<div class="empty-state"><p>Dit artikel bestaat niet (meer).</p>'
-        . '<p><a class="btn btn-secondary" href="' . e(url('artikelen.php')) . '">Terug naar de artikelen</a></p></div>';
+        . '<p><a class="btn btn-secondary" href="' . e(articles_url()) . '">Terug naar de artikelen</a></p></div>';
     include APP_ROOT . '/app/templates/footer.php';
     exit;
 }
 
 $pageTitle = $article['title'];
 $metaDescription = $article['excerpt'] !== '' ? $article['excerpt'] : article_excerpt_from_body($article['body_html']);
+$canonicalUrl = article_url($article['slug']);
 if ($article['cover_file'] !== '') {
     $ogImage = url('uploads/articles/' . $article['cover_file']);
 }
 include APP_ROOT . '/app/templates/header.php';
 ?>
-<nav class="breadcrumb"><a href="<?= e(url('artikelen.php')) ?>">Artikelen</a> <span>/</span> <?= e($article['title']) ?></nav>
+<nav class="breadcrumb"><a href="<?= e(articles_url()) ?>">Artikelen</a> <span>/</span> <?= e($article['title']) ?></nav>
 <?php if (isset($_COOKIE['sp_admin']) && admin_logged_in()): ?>
   <p class="admin-edit-bar">
     <a class="btn btn-small btn-secondary" href="<?= e(url('admin/artikel-bewerken.php?id=' . $article['id'])) ?>">Bewerken</a>
@@ -44,5 +45,5 @@ include APP_ROOT . '/app/templates/header.php';
        <a href="<?= e(url('#over-de-auteur')) ?>">Lees meer →</a></p>
   </div>
 </aside>
-<p class="back-link"><a href="<?= e(url('artikelen.php')) ?>">← Alle artikelen</a></p>
+<p class="back-link"><a href="<?= e(articles_url()) ?>">← Alle artikelen</a></p>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>

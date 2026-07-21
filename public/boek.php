@@ -14,6 +14,7 @@ if ($book === null || !(int) $book['published']) {
 
 $pageTitle = $book['title'];
 $metaDescription = article_excerpt_from_body($book['description'], 155);
+$canonicalUrl = book_url($book['slug']);
 if ($book['cover_file'] !== '') {
     $ogImage = url('cover.php?b=' . $book['id']);
 }
@@ -55,7 +56,7 @@ include APP_ROOT . '/app/templates/header.php';
       <?php elseif (!book_orderable($book)): ?>
         <p class="muted">Deze publicatie is tijdelijk niet op voorraad.</p>
       <?php elseif ($isFree): ?>
-        <a class="btn btn-primary" href="<?= e(url('gratis.php?b=' . $book['slug'])) ?>">Gratis downloaden</a>
+        <a class="btn btn-primary" href="<?= e(book_free_url($book['slug'])) ?>">Gratis downloaden</a>
         <p class="buy-note">Je ontvangt de downloadlink direct en per e-mail.</p>
       <?php else: ?>
         <?php if (in_array((int) $book['id'], cart_ids(), true)): ?>

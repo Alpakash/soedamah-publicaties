@@ -47,13 +47,13 @@ include APP_ROOT . '/app/templates/header.php';
       <?php foreach ($books as $book): ?>
         <div class="cart-row">
           <?php if ($book['cover_file'] !== ''): ?>
-            <a href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">
+            <a href="<?= e(book_url($book['slug'])) ?>">
               <img class="cart-thumb" src="<?= e(url('cover.php?b=' . $book['id'])) ?>"
                    alt="Omslag van <?= e($book['title']) ?>">
             </a>
           <?php endif; ?>
           <div class="cart-row-info">
-            <a class="cart-row-title" href="<?= e(url('boek.php?b=' . $book['slug'])) ?>"><?= e($book['title']) ?></a>
+            <a class="cart-row-title" href="<?= e(book_url($book['slug'])) ?>"><?= e($book['title']) ?></a>
             <span class="formats"><?= e(book_formats_label($book)) ?></span>
           </div>
           <span class="cart-row-price"><?= e(format_price((int) $book['price_cents'])) ?></span>
