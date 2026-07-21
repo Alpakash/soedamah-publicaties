@@ -5,7 +5,7 @@ $books = books_published();
 $featured = $books[0] ?? null;
 
 $pageTitle = 'Boeken en essays van Lachman Soedamah';
-$metaDescription = 'Boeken en essays van mr. dr. Lachman Soedamah over Suriname, het volkenrecht en de Hindostaanse gemeenschap. Direct te downloaden als PDF of EPUB.';
+$metaDescription = 'Boeken en essays van mr. dr. Lachman Soedamah over Suriname, recht, mens en maatschappij. Direct te downloaden als PDF of EPUB.';
 if ($featured !== null && $featured['cover_file'] !== '') {
     $ogImage = url('cover.php?b=' . $featured['id']);
 }
