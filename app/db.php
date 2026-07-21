@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS orders (
     shipping_address  TEXT NOT NULL DEFAULT '',
     consent_at        TEXT NOT NULL DEFAULT '',
     withdrawal_waived INTEGER NOT NULL DEFAULT 0,
+    reminder_sent_at  TEXT NOT NULL DEFAULT '',
     created_at        TEXT NOT NULL,
     paid_at           TEXT
 )
@@ -140,6 +141,11 @@ SQL);
     }
     if (!in_array('withdrawal_waived', $orderColumns, true)) {
         $pdo->exec('ALTER TABLE orders ADD COLUMN withdrawal_waived INTEGER NOT NULL DEFAULT 0');
+    }
+    // Migratie voor bestaande databases: tijdstip waarop de eenmalige
+    // herinnerings-/hulpmail is verstuurd voor een bestelling die op betaling wacht.
+    if (!in_array('reminder_sent_at', $orderColumns, true)) {
+        $pdo->exec("ALTER TABLE orders ADD COLUMN reminder_sent_at TEXT NOT NULL DEFAULT ''");
     }
 
     // Migratie voor bestaande databases: voorraadstatus en fysieke uitgaven per publicatie.

@@ -11,11 +11,18 @@ uit op de gekoppelde bankrekening.
    KvK-nummer indien van toepassing, en de **IBAN voor uitbetalingen**.
    Tot de activatie compleet is kun je alleen testbetalingen doen.
 
-## 2. iDEAL aanzetten
+## 2. iDEAL én creditcard aanzetten
 
 1. Dashboard → **Settings** → **Payments** → **Payment methods**.
-2. Zet **iDEAL** aan (naast Cards). De shop toont automatisch alle
-   betaalmethoden die hier aanstaan.
+2. Zet **iDEAL** aan én controleer dat **Cards** (creditcard/debitcard) aanstaat.
+   De shop toont automatisch alle betaalmethoden die hier aanstaan.
+
+> **Belangrijk voor buitenlandse klanten.** iDEAL werkt alléén met een Nederlandse
+> bankrekening. Een bezoeker uit bijvoorbeeld Suriname kan dus uitsluitend met
+> **creditcard** betalen. Staat **Cards** uit, dan kan zo iemand niet afrekenen en
+> blijft de bestelling op *wacht op betaling* staan. Zorg daarom dat Cards altijd
+> aanstaat. Cards zichtbaar krijgen kan pas als je Stripe-account volledig is
+> geactiveerd (stap 1) en uit de testmodus is.
 
 ## 3. API-sleutels invullen
 

@@ -54,6 +54,20 @@ switch ($type) {
             log_msg('Webhook: betaling mislukt voor bestelling ' . $order['id']);
         }
         break;
+
+    case 'checkout.session.expired':
+        // De betaalsessie is verlopen zonder betaling; markeer de bijbehorende
+        // openstaande bestelling(en) als 'verlopen' zodat het overzicht schoon blijft.
+        foreach ($findOrders($session) as $order) {
+            if ($order['status'] === 'pending') {
+                $stmt = db()->prepare(
+                    "UPDATE orders SET status = 'expired' WHERE id = ? AND status = 'pending'"
+                );
+                $stmt->execute([$order['id']]);
+                log_msg('Webhook: betaalsessie verlopen voor bestelling ' . $order['id']);
+            }
+        }
+        break;
 }
 
 echo json_encode(['received' => true]);
