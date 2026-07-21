@@ -83,8 +83,10 @@ standaard aan.
 
 De shop kan dagelijks automatisch:
 
-- **eenmalig** een vriendelijke hulp-/herinneringsmail sturen naar kopers die na
-  ongeveer een dag nog op betaling wachten (nooit meer dan één mail per bestelling);
+- **eenmalig** een vriendelijke hulp-/herinneringsmail sturen naar kopers die nog
+  op betaling wachten (standaard na 1 dag; wil je 2 dagen, zet dan
+  `payment_reminder_hours` op `48` in `app/config.php`) — nooit meer dan één mail
+  per bestelling;
 - bestellingen die al langer dan **3 dagen** op betaling wachten op **Verlopen**
   zetten, zodat het bestellingenoverzicht overzichtelijk blijft.
 
