@@ -98,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $slugInput   = trim((string) ($_POST['slug'] ?? ''));
         $subtitle    = trim((string) ($_POST['subtitle'] ?? ''));
         $description = sanitize_article_html((string) ($_POST['description'] ?? ''));
+        $specs       = trim((string) ($_POST['specs'] ?? ''));
         $priceCents  = parse_price((string) ($_POST['price'] ?? '0'));
         $published   = !empty($_POST['published']) ? 1 : 0;
         $inStock     = !empty($_POST['in_stock']) ? 1 : 0;
@@ -122,20 +123,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             if ($book === null) {
                 $stmt = db()->prepare(
-                    'INSERT INTO books (slug, title, subtitle, description, price_cents, published, in_stock, is_physical, hide_new_badge, sort_order, created_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    'INSERT INTO books (slug, title, subtitle, description, specs, price_cents, published, in_stock, is_physical, hide_new_badge, sort_order, created_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
                     $slug,
-                    $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, now(),
+                    $title, $subtitle, $description, $specs, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, now(),
                 ]);
                 $book = book_find((int) db()->lastInsertId());
             } else {
                 $stmt = db()->prepare(
-                    'UPDATE books SET slug = ?, title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, hide_new_badge = ?, sort_order = ?
+                    'UPDATE books SET slug = ?, title = ?, subtitle = ?, description = ?, specs = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, hide_new_badge = ?, sort_order = ?
                      WHERE id = ?'
                 );
-                $stmt->execute([$slug, $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, $book['id']]);
+                $stmt->execute([$slug, $title, $subtitle, $description, $specs, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, $book['id']]);
                 $book = book_find((int) $book['id']);
             }
 
@@ -247,6 +248,13 @@ include APP_ROOT . '/app/templates/admin_header.php';
   </div>
   <p class="field-hint">Waar gaat het boek over? Gebruik de knoppen voor opmaak.
      (Werkt JavaScript niet? Typ dan gewoon in het tekstvak hierboven.)</p>
+
+  <label for="specs">Specificaties</label>
+  <textarea id="specs" name="specs" rows="10" class="specs-field"
+            placeholder="Plak hier het specificatieblok, bijvoorbeeld:&#10;Taal: Nederlands&#10;ISBN: 9789083747002&#10;Aantal pagina's: circa 140&#10;Uitgever: Soedamah Publicaties"><?= e($formValue('specs')) ?></textarea>
+  <p class="field-hint">Plak het hele blok in één keer. Elke regel <code>Label: waarde</code> wordt een rij in
+     een nette specificatietabel onder de beschrijving. Een kopregel (zonder dubbele punt) en lege
+     regels worden automatisch overgeslagen. Laat leeg om geen tabel te tonen.</p>
 
   <div class="form-row">
     <div>

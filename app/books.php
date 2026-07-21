@@ -52,6 +52,31 @@ function book_orderable(array $book): bool
     return book_has_deliverable($book) && (int) $book['in_stock'] === 1;
 }
 
+/**
+ * Zet een vrij ingevuld specificatieblok om in een nette definitielijst.
+ * Elke regel in de vorm "Label: waarde" wordt een rij; lege regels en regels
+ * zonder dubbele punt (zoals een kopregel) worden overgeslagen. De hele tekst
+ * kan dus in één keer worden geplakt. Geeft '' terug als er niets bruikbaars is.
+ */
+function book_specs_html(string $raw): string
+{
+    $rows = '';
+    foreach (preg_split('/\r\n|\r|\n/', $raw) ?: [] as $line) {
+        $line = trim($line);
+        if ($line === '' || !str_contains($line, ':')) {
+            continue;
+        }
+        [$label, $value] = explode(':', $line, 2);
+        $label = trim($label);
+        $value = trim($value);
+        if ($label === '' || $value === '') {
+            continue;
+        }
+        $rows .= '<dt>' . e($label) . '</dt><dd>' . e($value) . '</dd>';
+    }
+    return $rows === '' ? '' : '<dl class="spec-list">' . $rows . '</dl>';
+}
+
 function book_formats_label(array $book): string
 {
     if (book_is_physical($book)) {

@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS books (
     in_stock    INTEGER NOT NULL DEFAULT 1,
     is_physical INTEGER NOT NULL DEFAULT 0,
     hide_new_badge INTEGER NOT NULL DEFAULT 0,
+    specs       TEXT NOT NULL DEFAULT '',
     sort_order  INTEGER NOT NULL DEFAULT 0,
     created_at  TEXT NOT NULL
 )
@@ -158,6 +159,11 @@ SQL);
     }
     if (!in_array('hide_new_badge', $bookColumns, true)) {
         $pdo->exec('ALTER TABLE books ADD COLUMN hide_new_badge INTEGER NOT NULL DEFAULT 0');
+    }
+    // Migratie voor bestaande databases: vrij in te vullen specificatieblok
+    // ("Label: waarde" per regel) dat als tabel onder de beschrijving verschijnt.
+    if (!in_array('specs', $bookColumns, true)) {
+        $pdo->exec("ALTER TABLE books ADD COLUMN specs TEXT NOT NULL DEFAULT ''");
     }
 
     $pdo->exec(<<<SQL
