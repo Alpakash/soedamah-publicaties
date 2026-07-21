@@ -253,7 +253,7 @@ function order_send_links(array $order): bool
 function admin_notify_email(): string
 {
     $admin = (string) config('admin_email', '');
-    return $admin !== '' ? $admin : 'soedamah@gmail.com';
+    return $admin !== '' ? $admin : 'soedamah@soedamah.nl';
 }
 
 /** Stuurt de beheerder(s) een melding van een bestelling. Geeft terug of er een mail verstuurd is. */
