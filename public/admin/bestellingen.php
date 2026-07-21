@@ -26,14 +26,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect(url('admin/bestellingen.php' . ($msg !== '' ? '?msg=' . $msg : '')));
 }
 
-$orders = db()->query('SELECT * FROM orders ORDER BY id DESC LIMIT 200')->fetchAll();
+// Ruim automatisch op: bestellingen die al langer dan 3 dagen op betaling wachten,
+// worden als 'verlopen' gemarkeerd. De Stripe-betaalsessie is dan allang vervallen.
+orders_expire_stale(3);
 
 $statusLabels = [
     'paid'    => ['Betaald', 'badge-success'],
     'free'    => ['Gratis', 'badge-success'],
     'pending' => ['Wacht op betaling', ''],
+    'expired' => ['Verlopen', 'badge-muted'],
     'failed'  => ['Mislukt', 'badge-error'],
 ];
+
+$allOrders = db()->query('SELECT * FROM orders ORDER BY id DESC LIMIT 500')->fetchAll();
+
+// Tellingen per status voor de filterknoppen.
+$counts = ['all' => count($allOrders)];
+foreach ($allOrders as $o) {
+    $s = (string) $o['status'];
+    $counts[$s] = ($counts[$s] ?? 0) + 1;
+}
+
+// Actief filter: 'all' of een geldige status.
+$filter = (string) ($_GET['status'] ?? 'all');
+if ($filter !== 'all' && !isset($statusLabels[$filter])) {
+    $filter = 'all';
+}
+$orders = $filter === 'all'
+    ? $allOrders
+    : array_values(array_filter($allOrders, static fn (array $o): bool => (string) $o['status'] === $filter));
+
+// Filterknoppen: alleen tonen wat daadwerkelijk voorkomt (naast "Alle").
+$filterTabs = [['all', 'Alle']];
+foreach ($statusLabels as $key => [$label]) {
+    if (($counts[$key] ?? 0) > 0) {
+        $filterTabs[] = [$key, $label];
+    }
+}
 
 $pageTitle = 'Bestellingen';
 include APP_ROOT . '/app/templates/admin_header.php';
@@ -50,8 +79,21 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <p class="alert alert-success">De bestelling is verwijderd.</p>
 <?php endif; ?>
 
-<?php if (!$orders): ?>
+<?php if ($allOrders): ?>
+  <nav class="filter-tabs" aria-label="Filter op status">
+    <?php foreach ($filterTabs as [$key, $label]): ?>
+      <a href="<?= e(url('admin/bestellingen.php' . ($key === 'all' ? '' : '?status=' . $key))) ?>"
+         class="filter-tab<?= $filter === $key ? ' is-active' : '' ?>">
+        <?= e($label) ?> <span class="filter-count"><?= (int) ($counts[$key] ?? 0) ?></span>
+      </a>
+    <?php endforeach; ?>
+  </nav>
+<?php endif; ?>
+
+<?php if (!$allOrders): ?>
   <div class="empty-state"><p>Er zijn nog geen bestellingen.</p></div>
+<?php elseif (!$orders): ?>
+  <div class="empty-state"><p>Geen bestellingen met deze status.</p></div>
 <?php else: ?>
   <div class="table-scroll">
   <table class="admin-table">

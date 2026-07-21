@@ -88,12 +88,14 @@ function orders_mark_paid(array $orders, string $email): array
 {
     $newlyPaid = false;
     foreach ($orders as $order) {
-        if (!in_array($order['status'], ['pending', 'failed'], true)) {
+        // 'expired' hoort erbij: als een betaling toch nog binnenkomt nadat we een
+        // bestelling als verlopen hadden gemarkeerd, wordt hij alsnog netjes betaald.
+        if (!in_array($order['status'], ['pending', 'failed', 'expired'], true)) {
             continue;
         }
         $stmt = db()->prepare(
             'UPDATE orders SET status = ?, email = ?, paid_at = ?, expires_at = ?
-             WHERE id = ? AND status IN (?, ?)'
+             WHERE id = ? AND status IN (?, ?, ?)'
         );
         $stmt->execute([
             'paid',
@@ -103,6 +105,7 @@ function orders_mark_paid(array $orders, string $email): array
             $order['id'],
             'pending',
             'failed',
+            'expired',
         ]);
         if ($stmt->rowCount() > 0) {
             $newlyPaid = true;
@@ -304,4 +307,131 @@ function orders_notify_admin(array $orders): void
 function order_notify_admin(array $order): void
 {
     orders_notify_admin([$order]);
+}
+
+/**
+ * Markeert bestellingen die al langer dan $days dagen op betaling wachten als
+ * 'expired' (verlopen). De Stripe-betaalsessie is dan allang vervallen, dus deze
+ * bestelling wordt nooit meer vanzelf betaald. Zo blijft het overzicht overzichtelijk
+ * en blijft 'wacht op betaling' niet eeuwig staan. Geeft het aantal gewijzigde regels.
+ */
+function orders_expire_stale(int $days = 3): int
+{
+    $cutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
+    $stmt = db()->prepare(
+        "UPDATE orders SET status = 'expired' WHERE status = 'pending' AND created_at < ?"
+    );
+    $stmt->execute([$cutoff]);
+    return $stmt->rowCount();
+}
+
+/**
+ * Stuurt eenmalig een vriendelijke hulp-/herinneringsmail naar kopers die na
+ * $afterHours uur nog steeds op betaling wachten (en vóór de bestelling verloopt).
+ * Precies één mail per bestelling/mandje — geen spam (bijgehouden via reminder_sent_at).
+ * Geeft het aantal verstuurde herinneringen terug.
+ */
+function orders_send_payment_reminders(int $afterHours = 24, int $beforeDays = 3): int
+{
+    $olderThan = gmdate('Y-m-d H:i:s', time() - $afterHours * 3600);   // minstens zo oud
+    $notBefore = gmdate('Y-m-d H:i:s', time() - $beforeDays * 86400);  // maar nog niet verlopen
+    $stmt = db()->prepare(
+        "SELECT * FROM orders
+         WHERE status = 'pending' AND email <> ''
+           AND (reminder_sent_at IS NULL OR reminder_sent_at = '')
+           AND created_at <= ? AND created_at >= ?
+         ORDER BY id"
+    );
+    $stmt->execute([$olderThan, $notBefore]);
+    $pending = $stmt->fetchAll();
+    if ($pending === []) {
+        return 0;
+    }
+
+    // Eén mandje kan meerdere bestellingen zijn: groepeer per checkout-sessie
+    // (val terug op e-mailadres) zodat de koper één mail krijgt, niet één per titel.
+    $groups = [];
+    foreach ($pending as $order) {
+        $session = (string) ($order['stripe_session_id'] ?? '');
+        $key = $session !== '' ? 's:' . $session : 'e:' . strtolower((string) $order['email']);
+        $groups[$key][] = $order;
+    }
+
+    $sent = 0;
+    foreach ($groups as $group) {
+        if (order_send_payment_reminder($group)) {
+            $sent++;
+        }
+    }
+    return $sent;
+}
+
+/** Verstuurt één herinneringsmail voor een groep openstaande bestellingen (één mandje). */
+function order_send_payment_reminder(array $orders): bool
+{
+    $email = '';
+    $buyerName = '';
+    foreach ($orders as $order) {
+        if ($email === '' && $order['email'] !== '') {
+            $email = (string) $order['email'];
+        }
+        if ($buyerName === '' && !empty($order['name'])) {
+            $buyerName = (string) $order['name'];
+        }
+    }
+    if ($email === '') {
+        return false;
+    }
+
+    $titles = [];
+    $links = [];
+    foreach ($orders as $order) {
+        $titles[] = (string) $order['book_title'];
+        $book = $order['book_id'] ? book_find((int) $order['book_id']) : null;
+        if ($book !== null && !empty($book['slug'])) {
+            $links[] = $order['book_title'] . ': ' . url('boek.php?b=' . $book['slug']);
+        }
+    }
+
+    $lines = [];
+    $lines[] = 'Beste ' . ($buyerName !== '' ? $buyerName : 'lezer') . ',';
+    $lines[] = '';
+    $lines[] = count($titles) === 1
+        ? 'Je begon onlangs een bestelling van "' . $titles[0] . '" bij Publicaties van '
+            . 'Lachman Soedamah, maar de betaling is nog niet afgerond.'
+        : 'Je begon onlangs een bestelling bij Publicaties van Lachman Soedamah, maar de '
+            . 'betaling is nog niet afgerond. Het ging om: ' . implode(', ', $titles) . '.';
+    $lines[] = '';
+    $lines[] = 'Wil je de bestelling alsnog afronden? Dat kan opnieuw via de shop'
+        . ($links !== [] ? ':' : '.');
+    if ($links !== []) {
+        $lines[] = '';
+        foreach ($links as $link) {
+            $lines[] = $link;
+        }
+    }
+    $lines[] = '';
+    $lines[] = 'Lukt betalen niet — bijvoorbeeld omdat iDEAL vanuit het buitenland niet werkt? '
+        . 'Beantwoord dan gerust deze e-mail, dan zoeken we samen naar een oplossing '
+        . '(bijvoorbeeld betaling per creditcard).';
+    $lines[] = '';
+    $lines[] = 'Heb je inmiddels al betaald of geen interesse meer? Dan kun je deze mail negeren; '
+        . 'je ontvangt hierover geen verdere berichten.';
+    $lines[] = '';
+    $lines[] = 'Met vriendelijke groet,';
+    $lines[] = (string) config('mail_from_name', 'Lachman Soedamah');
+    $lines[] = base_url();
+
+    $subject = count($titles) === 1
+        ? 'Je bestelling afronden: ' . $titles[0]
+        : 'Je bestelling afronden bij Publicaties Soedamah';
+
+    $ok = send_mail($email, $subject, implode("\n", $lines));
+    if ($ok) {
+        $stmt = db()->prepare('UPDATE orders SET reminder_sent_at = ? WHERE id = ?');
+        foreach ($orders as $order) {
+            $stmt->execute([now(), $order['id']]);
+        }
+    }
+    return $ok;
 }

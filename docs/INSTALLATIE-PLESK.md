@@ -69,7 +69,8 @@ standaard aan.
    - `mail_from`: bijv. `publicaties@soedamah.nl` — maak dit adres aan in Plesk
      (**Mail** → **Create Email Address**) zodat mails niet als spam worden
      gezien.
-   - `admin_email`: het adres dat een melding krijgt bij elke bestelling.
+   - `admin_email`: het adres dat een melding krijgt bij elke bestelling. Laat je
+     dit leeg, dan gaan de meldingen automatisch naar `soedamah@gmail.com`.
 
 ## 7. Eerste keer openen
 
@@ -77,6 +78,32 @@ standaard aan.
 2. **Doe dit direct na installatie**: stel het beheerwachtwoord in (het eerste
    bezoek aan de beheerpagina bepaalt het wachtwoord).
 3. Voeg een boek toe en zet een testbestelling door (zie STRIPE-SETUP.md).
+
+## 8. Automatische herinneringen & opschonen (geplande taak)
+
+De shop kan dagelijks automatisch:
+
+- **eenmalig** een vriendelijke hulp-/herinneringsmail sturen naar kopers die na
+  ongeveer een dag nog op betaling wachten (nooit meer dan één mail per bestelling);
+- bestellingen die al langer dan **3 dagen** op betaling wachten op **Verlopen**
+  zetten, zodat het bestellingenoverzicht overzichtelijk blijft.
+
+Het opschonen gebeurt ook al vanzelf zodra je het bestellingenoverzicht in het
+beheer opent. De **herinneringsmail** heeft echter een geplande taak nodig:
+
+1. Ga in Plesk naar **Websites & Domains** → (het subdomein) → **Scheduled Tasks**
+   (Geplande taken).
+2. Klik **Add Task** en kies als type **Run a PHP script**.
+3. Vul bij het scriptpad in: `app/cron.php`
+4. Zet de planning op **dagelijks** (bijv. elke dag om 09:00). Eén keer per dag is
+   ruim voldoende.
+5. Bewaar. Je kunt de taak testen met de knop **Run Now**; er verschijnt dan een
+   regel in `data/app.log`.
+
+> Kan Plesk geen PHP-script kiezen? Gebruik dan als commando bijvoorbeeld
+> `/opt/plesk/php/8.2/bin/php <volledig pad>/app/cron.php` (pas het PHP-pad aan de
+> geïnstalleerde versie aan). Het script weigert draaien via de browser en is dus
+> veilig.
 
 ## Problemen oplossen
 
