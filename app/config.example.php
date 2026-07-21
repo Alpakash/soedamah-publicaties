@@ -32,4 +32,9 @@ return [
     // Downloadlimieten per bestelling.
     'download_max'  => 5,   // aantal downloads per bestand (PDF en EPUB apart)
     'download_days' => 90,  // geldigheid van de downloadlink in dagen
+
+    // Na hoeveel uur de eenmalige herinneringsmail gaat naar kopers die nog op
+    // betaling wachten. 24 = na 1 dag, 48 = na 2 dagen. (Vereist de geplande taak
+    // app/cron.php; zie docs/INSTALLATIE-PLESK.md.)
+    'payment_reminder_hours' => 24,
 ];
