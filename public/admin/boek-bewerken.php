@@ -95,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         csrf_check();
         $title       = trim((string) ($_POST['title'] ?? ''));
+        $slugInput   = trim((string) ($_POST['slug'] ?? ''));
         $subtitle    = trim((string) ($_POST['subtitle'] ?? ''));
         $description = sanitize_article_html((string) ($_POST['description'] ?? ''));
         $priceCents  = parse_price((string) ($_POST['price'] ?? '0'));
@@ -112,6 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $priceCents = 0;
         }
 
+        // De slug (het leesbare deel van de URL) is bewerkbaar. Leeg gelaten =
+        // automatisch uit de titel afleiden. De slug wordt altijd genormaliseerd
+        // (kleine letters, koppeltekens) en uniek gemaakt t.o.v. andere boeken.
+        $slugBase = $slugInput !== '' ? $slugInput : $title;
+        $slug = book_unique_slug($slugBase, $book !== null ? (int) $book['id'] : 0);
+
         if (!$errors) {
             if ($book === null) {
                 $stmt = db()->prepare(
@@ -119,16 +126,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
-                    book_unique_slug($title),
+                    $slug,
                     $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, now(),
                 ]);
                 $book = book_find((int) db()->lastInsertId());
             } else {
                 $stmt = db()->prepare(
-                    'UPDATE books SET title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, hide_new_badge = ?, sort_order = ?
+                    'UPDATE books SET slug = ?, title = ?, subtitle = ?, description = ?, price_cents = ?, published = ?, in_stock = ?, is_physical = ?, hide_new_badge = ?, sort_order = ?
                      WHERE id = ?'
                 );
-                $stmt->execute([$title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, $book['id']]);
+                $stmt->execute([$slug, $title, $subtitle, $description, $priceCents, $published, $inStock, $isPhysical, $hideNewBadge, $sortOrder, $book['id']]);
                 $book = book_find((int) $book['id']);
             }
 
@@ -213,6 +220,15 @@ include APP_ROOT . '/app/templates/admin_header.php';
 
   <label for="subtitle">Ondertitel</label>
   <input type="text" id="subtitle" name="subtitle" maxlength="200" value="<?= e($formValue('subtitle')) ?>">
+
+  <label for="slug">URL-naam (slug)</label>
+  <input type="text" id="slug" name="slug" maxlength="200" value="<?= e($formValue('slug')) ?>"
+         placeholder="wordt automatisch uit de titel gemaakt">
+  <p class="field-hint">
+    Het leesbare deel van het webadres, bijv. <code><?= e(base_url()) ?>/boek/<strong><?= e($formValue('slug') !== '' ? $formValue('slug') : 'titel-van-het-boek') ?></strong></code>.
+    Leeg laten = automatisch uit de titel. Alleen kleine letters, cijfers en koppeltekens; het adres wordt uniek gemaakt.
+    <?php if (!$isNew): ?><br><strong>Let op:</strong> als je dit wijzigt, verandert het webadres van deze publicatie en werken oude links naar dit boek niet meer.<?php endif; ?>
+  </p>
 
   <label for="description-area">Beschrijving</label>
   <div class="rich-editor">
