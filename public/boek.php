@@ -80,6 +80,14 @@ include APP_ROOT . '/app/templates/header.php';
     <div class="book-description">
       <?= $book['description'] ?>
     </div>
+
+    <?php $specsHtml = book_specs_html((string) ($book['specs'] ?? '')); ?>
+    <?php if ($specsHtml !== ''): ?>
+      <section class="book-specs" aria-label="Specificaties">
+        <h2 class="book-specs-title">Specificaties</h2>
+        <?= $specsHtml ?>
+      </section>
+    <?php endif; ?>
   </div>
 </article>
 
