@@ -657,6 +657,16 @@ a:hover { color: var(--accent-dark); }
 
 .inline-form { display: inline; }
 
+/* Kop met een actieknop ernaast (bijv. Bestellingen + Testmail). */
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.page-head h1 { margin: 0; }
+
 /* ---------- Bedankt & download ---------- */
 
 .thanks {

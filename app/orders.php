@@ -245,17 +245,23 @@ function order_send_links(array $order): bool
     return orders_send_links([$order]);
 }
 
-function orders_notify_admin(array $orders): void
+/**
+ * Adres dat een melding krijgt bij elke bestelling. Instelbaar via config
+ * (admin_email); is dat leeg, dan valt hij terug op het vaste adres van de
+ * verkoper, zodat er altijd een melding van een verkochte aankoop binnenkomt.
+ */
+function admin_notify_email(): string
 {
-    // Adres dat een melding krijgt bij elke bestelling. Instelbaar via config
-    // (admin_email); is dat leeg, dan valt hij terug op het vaste adres van de
-    // verkoper, zodat er altijd een melding van een verkochte aankoop binnenkomt.
     $admin = (string) config('admin_email', '');
-    if ($admin === '') {
-        $admin = 'soedamah@gmail.com';
-    }
+    return $admin !== '' ? $admin : 'soedamah@soedamah.nl';
+}
+
+/** Stuurt de beheerder(s) een melding van een bestelling. Geeft terug of er een mail verstuurd is. */
+function orders_notify_admin(array $orders): bool
+{
+    $admin = admin_notify_email();
     if ($orders === []) {
-        return;
+        return false;
     }
     $total = 0;
     $itemLines = [];
@@ -293,20 +299,21 @@ function orders_notify_admin(array $orders): void
         $to = $shippingTo !== '' ? $shippingTo : $admin;
         $cc = ($admin !== '' && $admin !== $to) ? $admin : '';
         if ($to !== '') {
-            send_mail($to, $subject, $body, $cc);
+            return send_mail($to, $subject, $body, $cc);
         }
-        return;
+        return false;
     }
 
     if ($admin !== '') {
-        send_mail($admin, $subject, $body);
+        return send_mail($admin, $subject, $body);
     }
+    return false;
 }
 
-/** Wrapper voor één losse bestelling (gratis download). */
-function order_notify_admin(array $order): void
+/** Wrapper voor één losse bestelling (gratis download / opnieuw versturen). */
+function order_notify_admin(array $order): bool
 {
-    orders_notify_admin([$order]);
+    return orders_notify_admin([$order]);
 }
 
 /**

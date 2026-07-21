@@ -70,7 +70,7 @@ standaard aan.
      (**Mail** → **Create Email Address**) zodat mails niet als spam worden
      gezien.
    - `admin_email`: het adres dat een melding krijgt bij elke bestelling. Laat je
-     dit leeg, dan gaan de meldingen automatisch naar `soedamah@gmail.com`.
+     dit leeg, dan gaan de meldingen automatisch naar `soedamah@soedamah.nl`.
 
 ## 7. Eerste keer openen
 
