@@ -3,7 +3,7 @@ require __DIR__ . '/../app/bootstrap.php';
 
 $articles = articles_published();
 $pageTitle = 'Artikelen';
-$metaDescription = 'Artikelen en beschouwingen van Lachman Soedamah over Suriname, het volkenrecht en de Hindostaanse gemeenschap.';
+$metaDescription = 'Artikelen en beschouwingen van Lachman Soedamah over Suriname, recht, mens en maatschappij.';
 $canonicalUrl = articles_url();
 include APP_ROOT . '/app/templates/header.php';
 ?>
