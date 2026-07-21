@@ -3,8 +3,8 @@
   <div class="wrap footer-grid">
     <div>
       <p class="footer-brand">Lachman Soedamah · Publicaties</p>
-      <p>Boeken en essays over Suriname, het volkenrecht en de
-         Hindostaanse gemeenschap, rechtstreeks van de auteur.</p>
+      <p>Boeken en essays over Suriname, recht, mens en maatschappij,
+         rechtstreeks van de auteur.</p>
       <p><a href="<?= e(articles_url()) ?>">Artikelen &amp; beschouwingen</a></p>
     </div>
     <div>
