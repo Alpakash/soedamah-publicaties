@@ -4,6 +4,7 @@ require __DIR__ . '/../app/bootstrap.php';
 $articles = articles_published();
 $pageTitle = 'Artikelen';
 $metaDescription = 'Artikelen en beschouwingen van Lachman Soedamah over Suriname, het volkenrecht en de Hindostaanse gemeenschap.';
+$canonicalUrl = articles_url();
 include APP_ROOT . '/app/templates/header.php';
 ?>
 <section class="intro">
@@ -18,7 +19,7 @@ include APP_ROOT . '/app/templates/header.php';
 <?php else: ?>
   <div class="article-grid">
     <?php foreach ($articles as $article): ?>
-      <a class="article-card" href="<?= e(url('artikel.php?a=' . $article['slug'])) ?>">
+      <a class="article-card" href="<?= e(article_url($article['slug'])) ?>">
         <?php if ($article['cover_file'] !== ''): ?>
           <img class="article-cover" src="<?= e(url('uploads/articles/' . $article['cover_file'])) ?>"
                alt="" loading="lazy">

@@ -46,7 +46,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
         <td class="actions">
           <a class="btn btn-small btn-secondary" href="<?= e(url('admin/artikel-bewerken.php?id=' . $article['id'])) ?>">Bewerken</a>
           <?php if ((int) $article['published']): ?>
-            <a class="btn btn-small btn-secondary" href="<?= e(url('artikel.php?a=' . $article['slug'])) ?>">Bekijken</a>
+            <a class="btn btn-small btn-secondary" href="<?= e(article_url($article['slug'])) ?>">Bekijken</a>
           <?php endif; ?>
         </td>
       </tr>

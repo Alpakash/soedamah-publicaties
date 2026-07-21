@@ -192,7 +192,7 @@ include APP_ROOT . '/app/templates/admin_header.php';
 <?php if ($saved): ?>
   <p class="alert alert-success">Opgeslagen!
     <?php if ($book !== null && (int) $book['published'] && book_orderable($book)): ?>
-      <a href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">Bekijk de pagina in de shop.</a>
+      <a href="<?= e(book_url($book['slug'])) ?>">Bekijk de pagina in de shop.</a>
     <?php elseif ($book !== null && (int) $book['published'] && !book_has_deliverable($book)): ?>
       Let op: er is nog geen PDF of EPUB geüpload (en het is geen fysiek boek), bezoekers kunnen dit boek zien maar nog niet bestellen.
     <?php elseif ($book !== null && (int) $book['published'] && !(int) $book['in_stock']): ?>

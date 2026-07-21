@@ -7,7 +7,7 @@ if ($book === null || !(int) $book['published'] || (int) $book['price_cents'] > 
 }
 if (!book_orderable($book)) {
     // De boekpagina toont zelf al waarom de publicatie niet (meer) besteld kan worden.
-    redirect(url('boek.php?b=' . $book['slug']));
+    redirect(book_url($book['slug']));
 }
 
 $error = '';
@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Gratis download: ' . $book['title'];
+$canonicalUrl = book_free_url($book['slug']);
 include APP_ROOT . '/app/templates/header.php';
 ?>
 <?php if ($order !== null): ?>
@@ -69,7 +70,7 @@ include APP_ROOT . '/app/templates/header.php';
     <?php if ($error !== ''): ?>
       <p class="alert alert-error"><?= e($error) ?></p>
     <?php endif; ?>
-    <form method="post" action="<?= e(url('gratis.php')) ?>" class="stacked-form">
+    <form method="post" action="<?= e(book_free_url($book['slug'])) ?>" class="stacked-form">
       <input type="hidden" name="b" value="<?= e($book['slug']) ?>">
       <input type="hidden" name="form_rendered_at" value="<?= time() ?>">
       <p class="hp-field" aria-hidden="true">
@@ -81,7 +82,7 @@ include APP_ROOT . '/app/templates/header.php';
       <button type="submit" class="btn btn-primary">Stuur mij de downloadlink</button>
     </form>
     <p class="muted">We gebruiken je e-mailadres alleen om de downloadlink te sturen.</p>
-    <p class="back-link"><a href="<?= e(url('boek.php?b=' . $book['slug'])) ?>">← Terug naar de publicatie</a></p>
+    <p class="back-link"><a href="<?= e(book_url($book['slug'])) ?>">← Terug naar de publicatie</a></p>
   </div>
 <?php endif; ?>
 <?php include APP_ROOT . '/app/templates/footer.php'; ?>
