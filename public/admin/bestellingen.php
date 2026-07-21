@@ -22,6 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare('DELETE FROM orders WHERE id = ?');
         $stmt->execute([$order['id']]);
         $msg = 'verwijderd';
+    } elseif ($order !== null && $action === 'notify') {
+        // Verstuur de verkopersmelding voor deze bestelling (nogmaals).
+        $msg = order_notify_admin($order) ? 'meldingok' : 'meldingfout';
+    } elseif ($action === 'testmail') {
+        // Testbericht om te controleren of e-mail versturen werkt.
+        $to = admin_notify_email();
+        $body = "Dit is een testbericht van de webshop.\n\n"
+            . "Ontvang je deze e-mail, dan werkt het versturen van mail vanaf de webshop\n"
+            . "en komen ook de bestelmeldingen op dit adres binnen.\n\n"
+            . base_url() . "\n";
+        $msg = send_mail($to, 'Testmail van de webshop', $body) ? 'testok' : 'testfout';
     }
     redirect(url('admin/bestellingen.php' . ($msg !== '' ? '?msg=' . $msg : '')));
 }
@@ -64,10 +75,21 @@ foreach ($statusLabels as $key => [$label]) {
     }
 }
 
+$adminNotifyEmail = admin_notify_email();
+
 $pageTitle = 'Bestellingen';
 include APP_ROOT . '/app/templates/admin_header.php';
 ?>
-<h1>Bestellingen</h1>
+<div class="page-head">
+  <h1>Bestellingen</h1>
+  <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form">
+    <?= csrf_field() ?>
+    <input type="hidden" name="action" value="testmail">
+    <button type="submit" class="btn btn-small btn-secondary"
+            title="Stuurt een testbericht naar <?= e($adminNotifyEmail) ?> om te controleren of e-mail werkt">Testmail versturen</button>
+  </form>
+</div>
+<p class="muted">Meldingen van nieuwe bestellingen gaan naar <strong><?= e($adminNotifyEmail) ?></strong>.</p>
 
 <?php if (($_GET['msg'] ?? '') === 'reset'): ?>
   <p class="alert alert-success">Downloads gereset en de geldigheid van de link is verlengd.</p>
@@ -77,6 +99,14 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <p class="alert alert-error">De e-mail kon niet worden verstuurd. Controleer het e-mailadres van de bestelling.</p>
 <?php elseif (($_GET['msg'] ?? '') === 'verwijderd'): ?>
   <p class="alert alert-success">De bestelling is verwijderd.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'meldingok'): ?>
+  <p class="alert alert-success">De verkopersmelding is opnieuw verstuurd naar <?= e($adminNotifyEmail) ?>. Controleer ook de map Spam/Ongewenst.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'meldingfout'): ?>
+  <p class="alert alert-error">De verkopersmelding kon niet worden verstuurd. Kijk in <code>data/app.log</code> en controleer de mailinstellingen.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'testok'): ?>
+  <p class="alert alert-success">Testmail verstuurd naar <?= e($adminNotifyEmail) ?>. Komt hij niet aan? Kijk in de map Spam/Ongewenst en in <code>data/app.log</code>.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'testfout'): ?>
+  <p class="alert alert-error">De testmail kon niet worden verstuurd. E-mail werkt nog niet: controleer de mailinstellingen in Plesk (bestaat het afzenderadres?) en <code>data/app.log</code>.</p>
 <?php endif; ?>
 
 <?php if ($allOrders): ?>
@@ -156,6 +186,12 @@ include APP_ROOT . '/app/templates/admin_header.php';
               <button type="submit" class="btn btn-small btn-secondary">Mail&nbsp;opnieuw</button>
             </form>
             <?php endif; ?>
+            <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form">
+              <?= csrf_field() ?>
+              <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
+              <input type="hidden" name="action" value="notify">
+              <button type="submit" class="btn btn-small btn-secondary" title="Stuur de melding van deze bestelling (nogmaals) naar de verkoper">Melding&nbsp;verkoper</button>
+            </form>
           <?php endif; ?>
           <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form"
                 onsubmit="return confirm('Deze bestelling definitief verwijderen?\n\n<?= e(addslashes($order['book_title'])) ?> — <?= e(addslashes($order['name'] !== '' ? $order['name'] : ($order['email'] !== '' ? $order['email'] : 'onbekend'))) ?>\n\nDit kan niet ongedaan worden gemaakt.');">
