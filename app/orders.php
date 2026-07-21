@@ -418,9 +418,8 @@ function order_send_payment_reminder(array $orders): bool
         }
     }
     $lines[] = '';
-    $lines[] = 'Lukt betalen niet — bijvoorbeeld omdat iDEAL vanuit het buitenland niet werkt? '
-        . 'Beantwoord dan gerust deze e-mail, dan zoeken we samen naar een oplossing '
-        . '(bijvoorbeeld betaling per creditcard).';
+    $lines[] = 'Heb je een vraag of lukt het afronden niet? Beantwoord dan gerust deze e-mail, '
+        . 'dan helpen we je graag verder.';
     $lines[] = '';
     $lines[] = 'Heb je inmiddels al betaald of geen interesse meer? Dan kun je deze mail negeren; '
         . 'je ontvangt hierover geen verdere berichten.';
