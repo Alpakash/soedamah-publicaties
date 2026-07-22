@@ -30,7 +30,7 @@ include APP_ROOT . '/app/templates/header.php';
   <?php if (!article_hide_date($article) || article_in_media($article)): ?>
     <p class="article-meta">
       <?php if (!article_hide_date($article)): ?>
-        <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+        <span class="article-date"><?= calendar_icon_svg() ?><?= e(format_date($article['article_date'])) ?></span>
       <?php endif; ?>
       <?php if (article_in_media($article)): ?>
         <span class="badge badge-media">Verschenen in de media</span>

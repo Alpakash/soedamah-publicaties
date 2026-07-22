@@ -105,6 +105,14 @@ function cart_icon_svg(): string
         . '<path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
 }
 
+function calendar_icon_svg(): string
+{
+    return '<svg class="icon-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        . 'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        . '<rect x="3" y="4" width="18" height="18" rx="2"/>'
+        . '<path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+}
+
 function format_date(?string $utc): string
 {
     if (!$utc) {
