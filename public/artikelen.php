@@ -33,7 +33,7 @@ include APP_ROOT . '/app/templates/header.php';
         <?php elseif ($hasMeta): ?>
           <span class="article-card-kicker">
             <?php if ($showDate): ?>
-              <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+              <span class="article-date"><?= calendar_icon_svg() ?><?= e(format_date($article['article_date'])) ?></span>
             <?php endif; ?>
             <?php if ($inMedia): ?>
               <span class="badge badge-media">Verschenen in de media</span>
@@ -44,7 +44,7 @@ include APP_ROOT . '/app/templates/header.php';
           <?php if ($hasCover && $hasMeta): ?>
             <span class="article-card-meta">
               <?php if ($showDate): ?>
-                <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+                <span class="article-date"><?= calendar_icon_svg() ?><?= e(format_date($article['article_date'])) ?></span>
               <?php endif; ?>
               <?php if ($inMedia): ?>
                 <span class="badge badge-media">Verschenen in de media</span>
@@ -52,9 +52,11 @@ include APP_ROOT . '/app/templates/header.php';
             </span>
           <?php endif; ?>
           <strong class="article-title"><?= e($article['title']) ?></strong>
+          <span class="article-title-rule" aria-hidden="true"></span>
           <?php if ($excerpt !== ''): ?>
             <span class="article-excerpt"><?= e($excerpt) ?></span>
           <?php endif; ?>
+          <span class="article-more">Lees verder <span aria-hidden="true">→</span></span>
         </span>
       </a>
     <?php endforeach; ?>
