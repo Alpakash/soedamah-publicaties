@@ -47,6 +47,37 @@ function article_unique_slug(string $title, int $excludeId = 0): string
     }
 }
 
+/** Is dit artikel eerder in de media verschenen (toont de badge)? */
+function article_in_media(array $article): bool
+{
+    return (int) ($article['in_media'] ?? 0) === 1;
+}
+
+/** Moet de datum bij dit artikel verborgen blijven? */
+function article_hide_date(array $article): bool
+{
+    return (int) ($article['hide_date'] ?? 0) === 1;
+}
+
+/**
+ * HTML-blokje met de verwijzing naar het oorspronkelijke media-artikel, of ''
+ * als er geen (geldige) link is. Alleen http(s)-links worden geaccepteerd.
+ */
+function article_source_html(array $article): string
+{
+    $url = trim((string) ($article['source_url'] ?? ''));
+    if ($url === '' || !preg_match('#^https?://#i', $url)) {
+        return '';
+    }
+    $name = trim((string) ($article['source_name'] ?? ''));
+    $intro = $name !== ''
+        ? 'Dit artikel verscheen eerder in ' . e($name) . '.'
+        : 'Dit artikel verscheen eerder in de media.';
+    return '<p class="article-source">' . $intro
+        . ' <a href="' . e($url) . '" target="_blank" rel="noopener noreferrer">'
+        . 'Lees het oorspronkelijke artikel →</a></p>';
+}
+
 /** Korte samenvatting afleiden uit de opgemaakte tekst, voor overzicht en meta-omschrijving. */
 function article_excerpt_from_body(string $bodyHtml, int $maxLength = 220): string
 {

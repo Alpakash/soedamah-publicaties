@@ -25,7 +25,16 @@ include APP_ROOT . '/app/templates/header.php';
                alt="" loading="lazy">
         <?php endif; ?>
         <span class="article-card-body">
-          <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+          <?php if (!article_hide_date($article) || article_in_media($article)): ?>
+            <span class="article-card-meta">
+              <?php if (!article_hide_date($article)): ?>
+                <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+              <?php endif; ?>
+              <?php if (article_in_media($article)): ?>
+                <span class="badge badge-media">Verschenen in de media</span>
+              <?php endif; ?>
+            </span>
+          <?php endif; ?>
           <strong class="article-title"><?= e($article['title']) ?></strong>
           <?php $excerpt = $article['excerpt'] !== '' ? $article['excerpt'] : article_excerpt_from_body($article['body_html']); ?>
           <?php if ($excerpt !== ''): ?>
