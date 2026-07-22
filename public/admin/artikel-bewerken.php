@@ -65,6 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $excerpt = trim((string) ($_POST['excerpt'] ?? ''));
         $bodyHtml = sanitize_article_html((string) ($_POST['body_html'] ?? ''));
         $published = !empty($_POST['published']) ? 1 : 0;
+        $sourceUrl = trim((string) ($_POST['source_url'] ?? ''));
+        $sourceName = trim((string) ($_POST['source_name'] ?? ''));
+        $inMedia = !empty($_POST['in_media']) ? 1 : 0;
+        $hideDate = !empty($_POST['hide_date']) ? 1 : 0;
 
         if ($title === '') {
             $errors[] = 'Vul een titel in.';
@@ -72,6 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($articleDate === '' || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $articleDate, $dateParts)
             || !checkdate((int) $dateParts[2], (int) $dateParts[3], (int) $dateParts[1])) {
             $errors[] = 'Vul een geldige datum in.';
+        }
+        if ($sourceUrl !== '' && !preg_match('#^https?://#i', $sourceUrl)) {
+            $errors[] = 'De media-link moet een volledige URL zijn die begint met https:// (of http://).';
         }
         if ($bodyHtml === '') {
             $errors[] = 'Vul de tekst van het artikel in.';
@@ -88,22 +95,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$errors) {
             if ($article === null) {
                 $stmt = db()->prepare(
-                    'INSERT INTO articles (slug, title, excerpt, body_html, cover_file, published, article_date, created_at, updated_at)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                    'INSERT INTO articles (slug, title, excerpt, body_html, cover_file, published, article_date,
+                        source_url, source_name, in_media, hide_date, created_at, updated_at)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
                 );
                 $stmt->execute([
                     article_unique_slug($title), $title, $excerpt, $bodyHtml, $coverFile,
-                    $published, $articleDate, now(), now(),
+                    $published, $articleDate, $sourceUrl, $sourceName, $inMedia, $hideDate, now(), now(),
                 ]);
                 $newId = (int) db()->lastInsertId();
             } else {
                 $stmt = db()->prepare(
                     'UPDATE articles SET title = ?, excerpt = ?, body_html = ?, cover_file = ?,
-                        published = ?, article_date = ?, updated_at = ?
+                        published = ?, article_date = ?, source_url = ?, source_name = ?, in_media = ?, hide_date = ?, updated_at = ?
                      WHERE id = ?'
                 );
                 $stmt->execute([
-                    $title, $excerpt, $bodyHtml, $coverFile, $published, $articleDate, now(), $article['id'],
+                    $title, $excerpt, $bodyHtml, $coverFile, $published, $articleDate,
+                    $sourceUrl, $sourceName, $inMedia, $hideDate, now(), $article['id'],
                 ]);
                 $newId = (int) $article['id'];
             }
@@ -130,6 +139,12 @@ $bodyHtmlValue = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['body_htm
 $publishedChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
     ? !empty($_POST['published'])
     : ($article !== null && (int) $article['published'] === 1);
+$inMediaChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? !empty($_POST['in_media'])
+    : ($article !== null && (int) $article['in_media'] === 1);
+$hideDateChecked = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? !empty($_POST['hide_date'])
+    : ($article !== null && (int) $article['hide_date'] === 1);
 $dateValue = $formValue('article_date', gmdate('Y-m-d'));
 
 $pageTitle = $isNew ? 'Nieuw artikel' : 'Bewerken: ' . $article['title'];
@@ -159,6 +174,10 @@ include APP_ROOT . '/app/templates/admin_header.php';
     <div>
       <label for="article_date">Datum *</label>
       <input type="date" id="article_date" name="article_date" required value="<?= e($dateValue) ?>">
+      <label class="checkbox-line checkbox-line-compact">
+        <input type="checkbox" name="hide_date" value="1" <?= $hideDateChecked ? 'checked' : '' ?>>
+        Datum niet tonen op de site
+      </label>
     </div>
     <div>
       <label for="cover">Omslagfoto (JPG, PNG of WebP)</label>
@@ -197,6 +216,22 @@ include APP_ROOT . '/app/templates/admin_header.php';
   </div>
   <p class="field-hint">Afbeeldingen en video's die je hier invoegt, komen bij de tekst zelf te staan.
      (Werkt JavaScript niet? Typ dan gewoon in het tekstvak hierboven.)</p>
+
+  <fieldset>
+    <legend>Media</legend>
+    <label class="checkbox-line">
+      <input type="checkbox" name="in_media" value="1" <?= $inMediaChecked ? 'checked' : '' ?>>
+      Verschenen in de media (toon de badge “Verschenen in de media”)
+    </label>
+    <label for="source_url">Link naar het oorspronkelijke artikel (optioneel)</label>
+    <input type="url" id="source_url" name="source_url" maxlength="500"
+           placeholder="https://…" value="<?= e($formValue('source_url')) ?>">
+    <label for="source_name">Naam van het medium (optioneel)</label>
+    <input type="text" id="source_name" name="source_name" maxlength="150"
+           placeholder="bijv. Starnieuws, de Ware Tijd" value="<?= e($formValue('source_name')) ?>">
+    <p class="field-hint">Vul je een link in, dan verschijnt onderaan het artikel “Lees het
+       oorspronkelijke artikel →”. De naam van het medium wordt in dat zinnetje gebruikt.</p>
+  </fieldset>
 
   <label class="checkbox-line">
     <input type="checkbox" name="published" value="1" <?= $publishedChecked ? 'checked' : '' ?>>

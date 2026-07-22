@@ -27,13 +27,23 @@ include APP_ROOT . '/app/templates/header.php';
   </p>
 <?php endif; ?>
 <article class="article-detail">
-  <p class="article-date"><?= e(format_date($article['article_date'])) ?></p>
+  <?php if (!article_hide_date($article) || article_in_media($article)): ?>
+    <p class="article-meta">
+      <?php if (!article_hide_date($article)): ?>
+        <span class="article-date"><?= e(format_date($article['article_date'])) ?></span>
+      <?php endif; ?>
+      <?php if (article_in_media($article)): ?>
+        <span class="badge badge-media">Verschenen in de media</span>
+      <?php endif; ?>
+    </p>
+  <?php endif; ?>
   <h1><?= e($article['title']) ?></h1>
   <?php if ($article['cover_file'] !== ''): ?>
     <img class="article-hero" src="<?= e(url('uploads/articles/' . $article['cover_file'])) ?>"
          alt="">
   <?php endif; ?>
   <div class="article-body"><?= $article['body_html'] ?></div>
+  <?= article_source_html($article) ?>
 </article>
 
 <aside class="author-mini">

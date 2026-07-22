@@ -176,10 +176,30 @@ CREATE TABLE IF NOT EXISTS articles (
     cover_file   TEXT NOT NULL DEFAULT '',
     published    INTEGER NOT NULL DEFAULT 0,
     article_date TEXT NOT NULL,
+    source_url   TEXT NOT NULL DEFAULT '',
+    source_name  TEXT NOT NULL DEFAULT '',
+    in_media     INTEGER NOT NULL DEFAULT 0,
+    hide_date    INTEGER NOT NULL DEFAULT 0,
     created_at   TEXT NOT NULL,
     updated_at   TEXT NOT NULL
 )
 SQL);
+
+    // Migratie voor bestaande databases: media-referentie, badge en optioneel
+    // verbergen van de datum bij een artikel.
+    $articleColumns = $pdo->query('PRAGMA table_info(articles)')->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('source_url', $articleColumns, true)) {
+        $pdo->exec("ALTER TABLE articles ADD COLUMN source_url TEXT NOT NULL DEFAULT ''");
+    }
+    if (!in_array('source_name', $articleColumns, true)) {
+        $pdo->exec("ALTER TABLE articles ADD COLUMN source_name TEXT NOT NULL DEFAULT ''");
+    }
+    if (!in_array('in_media', $articleColumns, true)) {
+        $pdo->exec('ALTER TABLE articles ADD COLUMN in_media INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('hide_date', $articleColumns, true)) {
+        $pdo->exec('ALTER TABLE articles ADD COLUMN hide_date INTEGER NOT NULL DEFAULT 0');
+    }
 
     $pdo->exec(<<<SQL
 CREATE TABLE IF NOT EXISTS login_attempts (
