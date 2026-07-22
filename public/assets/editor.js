@@ -34,9 +34,50 @@
     area.hidden = false;
     hidden.hidden = true;
 
+    // Eén keer Enter maakt voortaan een nieuwe alinea (<p>, met witruimte ertussen)
+    // in plaats van een enkele regelafbreking. Shift+Enter blijft een gewone
+    // regelafbreking binnen dezelfde alinea.
+    try {
+      document.execCommand('defaultParagraphSeparator', false, 'p');
+    } catch (e) {
+      /* Oudere browser: valt terug op standaardgedrag. */
+    }
+
     function syncHidden() {
       hidden.value = area.innerHTML;
     }
+
+    function escapeText(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Plakt tekst als nette alinea's: lege regels scheiden alinea's; staan er geen
+    // lege regels, dan wordt elke regel een eigen alinea. Zo loopt geplakte tekst
+    // netjes door met witruimte tussen de alinea's, zonder rommelige opmaak.
+    area.addEventListener('paste', function (e) {
+      var cd = e.clipboardData || window.clipboardData;
+      if (!cd) {
+        return;
+      }
+      e.preventDefault();
+      var text = (cd.getData('text/plain') || '').replace(/\r\n?/g, '\n');
+      var html;
+      if (/\n[ \t]*\n/.test(text)) {
+        html = text.split(/\n[ \t]*\n+/).map(function (block) {
+          block = block.replace(/^\n+|\n+$/g, '');
+          return block.trim() === '' ? '' : '<p>' + escapeText(block).replace(/\n/g, '<br>') + '</p>';
+        }).join('');
+      } else {
+        html = text.split('\n').map(function (line) {
+          return line.trim() === '' ? '' : '<p>' + escapeText(line) + '</p>';
+        }).join('');
+      }
+      if (!html) {
+        html = '<p>' + escapeText(text) + '</p>';
+      }
+      document.execCommand('insertHTML', false, html);
+      syncHidden();
+    });
 
     function exec(command, value) {
       area.focus();
