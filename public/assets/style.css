@@ -473,7 +473,10 @@ a:hover { color: var(--accent-dark); }
   color: var(--ink);
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  /* Eén gedeeld goud-accent bovenaan elke kaart, zodat foto- en tekstkaarten
+     als één set ogen. */
+  border-top: 3px solid var(--gold);
+  border-radius: 8px;
   overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -484,19 +487,10 @@ a:hover { color: var(--accent-dark); }
 .article-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .article-card-body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
 
-/* Tekst-eerst kaart: artikel zonder omslagfoto krijgt een rustige kopbalk
-   (datum + eventuele media-badge) en een grotere titel. */
-.article-card-kicker {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  padding: 0.85rem 1.25rem;
-  background: var(--paper-deep);
-  border-bottom: 1px solid var(--line);
-}
-.article-card--text .article-title { font-size: 1.45rem; }
-.article-card--text .article-card-body { padding-top: 1rem; }
+/* Tekstkaart (zonder omslagfoto): iets grotere titel en wat meer lucht bovenin,
+   zodat hij evenveel gewicht heeft als een fotokaart. Verder identieke opbouw. */
+.article-card--text .article-card-body { padding-top: 1.3rem; }
+.article-card--text .article-title { font-size: 1.4rem; }
 .article-date {
   display: inline-flex;
   align-items: center;
