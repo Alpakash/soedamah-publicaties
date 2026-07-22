@@ -26,22 +26,13 @@ include APP_ROOT . '/app/templates/header.php';
         $hasMeta = $showDate || $inMedia;
         $excerpt = $article['excerpt'] !== '' ? $article['excerpt'] : article_excerpt_from_body($article['body_html']);
       ?>
-      <a class="article-card <?= $hasCover ? '' : 'article-card--text' ?>" href="<?= e(article_url($article['slug'])) ?>">
+      <a class="article-card <?= $hasCover ? 'article-card--image' : 'article-card--text' ?>" href="<?= e(article_url($article['slug'])) ?>">
         <?php if ($hasCover): ?>
           <img class="article-cover" src="<?= e(url('uploads/articles/' . $article['cover_file'])) ?>"
                alt="" loading="lazy">
-        <?php elseif ($hasMeta): ?>
-          <span class="article-card-kicker">
-            <?php if ($showDate): ?>
-              <span class="article-date"><?= calendar_icon_svg() ?><?= e(format_date($article['article_date'])) ?></span>
-            <?php endif; ?>
-            <?php if ($inMedia): ?>
-              <span class="badge badge-media">Verschenen in de media</span>
-            <?php endif; ?>
-          </span>
         <?php endif; ?>
         <span class="article-card-body">
-          <?php if ($hasCover && $hasMeta): ?>
+          <?php if ($hasMeta): ?>
             <span class="article-card-meta">
               <?php if ($showDate): ?>
                 <span class="article-date"><?= calendar_icon_svg() ?><?= e(format_date($article['article_date'])) ?></span>
