@@ -463,6 +463,7 @@ a:hover { color: var(--accent-dark); }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 2rem;
+  align-items: start;
 }
 
 .article-card {
@@ -480,9 +481,8 @@ a:hover { color: var(--accent-dark); }
   transform: translateY(-3px);
   box-shadow: 0 16px 30px -16px rgba(38, 34, 28, 0.5);
 }
-.article-card { height: 100%; }
 .article-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
-.article-card-body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; flex: 1; gap: 0.35rem; }
+.article-card-body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
 
 /* Tekst-eerst kaart: artikel zonder omslagfoto krijgt een rustige kopbalk
    (datum + eventuele media-badge) en een grotere titel. */
@@ -517,10 +517,9 @@ a:hover { color: var(--accent-dark); }
   margin: 0.3rem 0 0.15rem;
 }
 .article-excerpt { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
-/* "Lees verder" onderaan de kaart, uitgelijnd over alle kaarten */
+/* "Lees verder" direct onder de tekst (compact, geen opgevulde witruimte) */
 .article-more {
-  margin-top: auto;
-  padding-top: 0.9rem;
+  padding-top: 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
