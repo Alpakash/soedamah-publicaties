@@ -477,8 +477,24 @@ a:hover { color: var(--accent-dark); }
   transform: translateY(-3px);
   box-shadow: 0 16px 30px -16px rgba(38, 34, 28, 0.5);
 }
+.article-card { height: 100%; }
 .article-cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 .article-card-body { padding: 1.1rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
+
+/* Tekst-eerst kaart: artikel zonder omslagfoto krijgt een gekleurde kopbalk
+   (datum + eventuele media-badge) en een grotere titel. */
+.article-card-kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--accent-soft);
+}
+.article-card-kicker .article-date { color: var(--accent-dark); }
+.article-card--text .article-card-kicker .badge-media { background: var(--accent); color: #fff; }
+.article-card--text .article-title { font-size: 1.45rem; }
+.article-card--text .article-card-body { padding-top: 1rem; }
 .article-date { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
 .article-title { font-family: var(--serif); font-size: 1.2rem; line-height: 1.35; }
 .article-excerpt { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
