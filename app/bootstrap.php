@@ -21,6 +21,7 @@ require __DIR__ . '/stripe.php';
 require __DIR__ . '/mail.php';
 require __DIR__ . '/orders.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/analytics.php';
 
 /**
  * @return mixed
@@ -120,3 +121,7 @@ function ensure_dir(string $path): void
         @mkdir($path, 0755, true);
     }
 }
+
+// Bezoekersstatistieken (privacyvriendelijk, zonder cookies) — alleen voor de
+// publieke pagina's; beheer, webhook en bestandsdownloads tellen niet mee.
+analytics_track();
