@@ -202,6 +202,18 @@ SQL);
     }
 
     $pdo->exec(<<<SQL
+CREATE TABLE IF NOT EXISTS page_views (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    day           TEXT NOT NULL,
+    page          TEXT NOT NULL,
+    visitor_hash  TEXT NOT NULL,
+    referrer_host TEXT NOT NULL DEFAULT '',
+    created_at    TEXT NOT NULL
+)
+SQL);
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_page_views_day ON page_views (day)');
+
+    $pdo->exec(<<<SQL
 CREATE TABLE IF NOT EXISTS login_attempts (
     ip            TEXT PRIMARY KEY,
     count         INTEGER NOT NULL DEFAULT 0,
