@@ -87,8 +87,10 @@ De shop kan dagelijks automatisch:
   op betaling wachten (standaard na 2 dagen; wil je 1 dag, zet dan
   `payment_reminder_hours` op `24` in `app/config.php`) — nooit meer dan één mail
   per bestelling;
-- bestellingen die al langer dan **3 dagen** op betaling wachten op **Verlopen**
-  zetten, zodat het bestellingenoverzicht overzichtelijk blijft.
+- bestellingen op **Verlopen** zetten zodra ze langer dan **3 dagen** op betaling
+  wachten én de herinnering is verstuurd, zodat het overzicht overzichtelijk blijft.
+  Een bestelling verloopt dus nooit voordat de herinnering z'n kans heeft gehad; als
+  vangnet verloopt alles na uiterlijk **7 dagen**, ook als de cron of mail even hapert.
 
 Het opschonen gebeurt ook al vanzelf zodra je het bestellingenoverzicht in het
 beheer opent. De **herinneringsmail** heeft echter een geplande taak nodig:

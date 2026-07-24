@@ -24,17 +24,18 @@ if (PHP_SAPI !== 'cli') {
 
 require __DIR__ . '/bootstrap.php';
 
-// Aantal dagen dat een onbetaalde bestelling blijft staan voordat hij 'verlopen' wordt.
+// Aantal dagen dat een (al herinnerde) onbetaalde bestelling blijft staan voordat
+// hij 'verlopen' wordt; en het veiligheidsplafond waarna hij hoe dan ook verloopt.
 $expireDays = 3;
+$hardCapDays = 7;
 // Na hoeveel uur de eenmalige herinneringsmail gaat (instelbaar via config;
-// 24 = na 1 dag, 48 = na 2 dagen). Blijft altijd binnen de verlooptermijn.
+// 24 = na 1 dag, 48 = na 2 dagen).
 $reminderHours = max(1, (int) config('payment_reminder_hours', 48));
-if ($reminderHours >= $expireDays * 24) {
-    $reminderHours = $expireDays * 24 - 1;
-}
 
-$reminded = orders_send_payment_reminders($reminderHours, $expireDays);
-$expired = orders_expire_stale($expireDays);
+// Eerst herinneren, dán pas verlopen: zo krijgt elke bestelling zijn herinnering
+// (ook als de cron een dag heeft overgeslagen) voordat hij op 'verlopen' gaat.
+$reminded = orders_send_payment_reminders($reminderHours);
+$expired = orders_expire_stale($expireDays, $hardCapDays);
 
 $summary = sprintf(
     '%s onderhoud: %d herinnering(en) verstuurd, %d bestelling(en) op verlopen gezet.',

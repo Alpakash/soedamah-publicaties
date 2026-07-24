@@ -322,13 +322,24 @@ function order_notify_admin(array $order): bool
  * bestelling wordt nooit meer vanzelf betaald. Zo blijft het overzicht overzichtelijk
  * en blijft 'wacht op betaling' niet eeuwig staan. Geeft het aantal gewijzigde regels.
  */
-function orders_expire_stale(int $days = 3): int
+function orders_expire_stale(int $days = 3, int $hardCapDays = 7): int
 {
-    $cutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
+    // Een bestelling verloopt pas als de herinnering z'n kans heeft gehad:
+    //  - ouder dan $days én al herinnerd (of geen e-mailadres, dan valt er niets te
+    //    herinneren), OF
+    //  - ouder dan het veiligheidsplafond $hardCapDays — zodat er nooit iets voor
+    //    eeuwig op 'wacht op betaling' blijft staan, ook niet als de cron of de mail
+    //    een tijd hapert.
+    $expireCutoff = gmdate('Y-m-d H:i:s', time() - $days * 86400);
+    $hardCutoff = gmdate('Y-m-d H:i:s', time() - max($days, $hardCapDays) * 86400);
     $stmt = db()->prepare(
-        "UPDATE orders SET status = 'expired' WHERE status = 'pending' AND created_at < ?"
+        "UPDATE orders SET status = 'expired'
+         WHERE status = 'pending' AND (
+             (created_at < :expire AND (COALESCE(reminder_sent_at, '') <> '' OR email = ''))
+             OR created_at < :hard
+         )"
     );
-    $stmt->execute([$cutoff]);
+    $stmt->execute([':expire' => $expireCutoff, ':hard' => $hardCutoff]);
     return $stmt->rowCount();
 }
 
@@ -338,18 +349,21 @@ function orders_expire_stale(int $days = 3): int
  * Precies één mail per bestelling/mandje — geen spam (bijgehouden via reminder_sent_at).
  * Geeft het aantal verstuurde herinneringen terug.
  */
-function orders_send_payment_reminders(int $afterHours = 24, int $beforeDays = 3): int
+function orders_send_payment_reminders(int $afterHours = 48): int
 {
-    $olderThan = gmdate('Y-m-d H:i:s', time() - $afterHours * 3600);   // minstens zo oud
-    $notBefore = gmdate('Y-m-d H:i:s', time() - $beforeDays * 86400);  // maar nog niet verlopen
+    // Elke bestelling die minstens $afterHours op betaling wacht en nog geen
+    // herinnering heeft gehad, krijgt er één. Er is bewust géén bovengrens op de
+    // leeftijd: draaide de cron een dag niet, dan krijgt een 'net te oude'
+    // bestelling alsnog zijn herinnering (en pas daarna kan hij verlopen).
+    $olderThan = gmdate('Y-m-d H:i:s', time() - $afterHours * 3600);
     $stmt = db()->prepare(
         "SELECT * FROM orders
          WHERE status = 'pending' AND email <> ''
            AND (reminder_sent_at IS NULL OR reminder_sent_at = '')
-           AND created_at <= ? AND created_at >= ?
+           AND created_at <= ?
          ORDER BY id"
     );
-    $stmt->execute([$olderThan, $notBefore]);
+    $stmt->execute([$olderThan]);
     $pending = $stmt->fetchAll();
     if ($pending === []) {
         return 0;
