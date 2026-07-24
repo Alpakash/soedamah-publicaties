@@ -56,15 +56,14 @@ switch ($type) {
         break;
 
     case 'checkout.session.expired':
-        // De betaalsessie is verlopen zonder betaling; markeer de bijbehorende
-        // openstaande bestelling(en) als 'verlopen' zodat het overzicht schoon blijft.
+        // De Stripe-betaalsessie vervalt al na ~24 uur. We markeren de bestelling
+        // hier bewust NIET meteen als 'verlopen': dan zou de koper nog vóór de
+        // herinnering (na ~2 dagen) uit beeld raken. Het tijdgestuurde proces
+        // (herinneren, daarna pas verlopen) handelt dit netjes af. Alleen loggen.
         foreach ($findOrders($session) as $order) {
             if ($order['status'] === 'pending') {
-                $stmt = db()->prepare(
-                    "UPDATE orders SET status = 'expired' WHERE id = ? AND status = 'pending'"
-                );
-                $stmt->execute([$order['id']]);
-                log_msg('Webhook: betaalsessie verlopen voor bestelling ' . $order['id']);
+                log_msg('Webhook: Stripe-betaalsessie verlopen voor bestelling ' . $order['id']
+                    . ' (blijft nog open voor herinnering).');
             }
         }
         break;
