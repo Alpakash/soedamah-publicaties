@@ -25,6 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($order !== null && $action === 'notify') {
         // Verstuur de verkopersmelding voor deze bestelling (nogmaals).
         $msg = order_notify_admin($order) ? 'meldingok' : 'meldingfout';
+    } elseif ($order !== null && $action === 'remind' && $order['email'] !== '') {
+        // Stuur handmatig de "lukt het betalen?"-herinnering naar de koper. Verzamel
+        // alle nog niet-betaalde bestellingen van hetzelfde e-mailadres, zodat er
+        // één nette mail uitgaat i.p.v. één per (mislukte) poging.
+        $stmt = db()->prepare(
+            "SELECT * FROM orders WHERE email = ? AND status IN ('pending', 'expired', 'failed') ORDER BY id"
+        );
+        $stmt->execute([$order['email']]);
+        $group = $stmt->fetchAll();
+        if ($group === []) {
+            $group = [$order];
+        }
+        $msg = order_send_payment_reminder($group) ? 'herinneringok' : 'herinneringfout';
     } elseif ($action === 'testmail') {
         // Testbericht om te controleren of e-mail versturen werkt.
         $to = admin_notify_email();
@@ -107,6 +120,10 @@ include APP_ROOT . '/app/templates/admin_header.php';
   <p class="alert alert-success">Testmail verstuurd naar <?= e($adminNotifyEmail) ?>. Komt hij niet aan? Kijk in de map Spam/Ongewenst en in <code>data/app.log</code>.</p>
 <?php elseif (($_GET['msg'] ?? '') === 'testfout'): ?>
   <p class="alert alert-error">De testmail kon niet worden verstuurd. E-mail werkt nog niet: controleer de mailinstellingen in Plesk (bestaat het afzenderadres?) en <code>data/app.log</code>.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'herinneringok'): ?>
+  <p class="alert alert-success">De herinnering ("lukt het betalen?") is naar de koper verstuurd.</p>
+<?php elseif (($_GET['msg'] ?? '') === 'herinneringfout'): ?>
+  <p class="alert alert-error">De herinnering kon niet worden verstuurd. Kijk in <code>data/app.log</code> en controleer de mailinstellingen.</p>
 <?php endif; ?>
 
 <?php if ($allOrders): ?>
@@ -191,6 +208,14 @@ include APP_ROOT . '/app/templates/admin_header.php';
               <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
               <input type="hidden" name="action" value="notify">
               <button type="submit" class="btn btn-small btn-secondary" title="Stuur de melding van deze bestelling (nogmaals) naar de verkoper">Melding&nbsp;verkoper</button>
+            </form>
+          <?php elseif (in_array($order['status'], ['pending', 'expired', 'failed'], true) && $order['email'] !== ''): ?>
+            <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form"
+                  onsubmit="return confirm('Een vriendelijke herinnering (&quot;lukt het betalen?&quot;) sturen naar:\n<?= e(addslashes($order['email'])) ?>\n\nAlle nog niet-betaalde bestellingen van deze koper worden in één mail meegenomen.');">
+              <?= csrf_field() ?>
+              <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
+              <input type="hidden" name="action" value="remind">
+              <button type="submit" class="btn btn-small btn-secondary" title="Stuur de koper de vriendelijke 'lukt het betalen?'-herinnering">Herinnering&nbsp;sturen</button>
             </form>
           <?php endif; ?>
           <form method="post" action="<?= e(url('admin/bestellingen.php')) ?>" class="inline-form"
