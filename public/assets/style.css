@@ -676,7 +676,7 @@ a:hover { color: var(--accent-dark); }
 .book-description p { margin: 0 0 1rem; }
 
 /* Specificatietabel onder de beschrijving */
-.book-specs { margin-top: 2rem; }
+.book-specs { margin-top: 2rem; max-width: 46rem; }
 .book-specs-title { font-size: 1.2rem; margin: 0 0 0.75rem; }
 .spec-list {
   display: grid;
@@ -705,7 +705,12 @@ a:hover { color: var(--accent-dark); }
 .deck-title {
   font-family: var(--serif);
   font-size: 1.35rem;
-  margin: 0 0 1rem;
+  margin: 0 0 0.35rem;
+}
+.deck-lead {
+  color: var(--muted);
+  max-width: 46rem;
+  margin: 0 0 1.1rem;
 }
 .deck-stage {
   display: flex;
@@ -728,13 +733,6 @@ a:hover { color: var(--accent-dark); }
   gap: 0.85rem;
   margin-top: 1rem;
 }
-.deck-hint {
-  display: none;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin: 0.5rem 0 0;
-}
 
 /* Met JavaScript: één dia tegelijk, met bediening. Zonder JavaScript blijven
    alle dia's onder elkaar staan als leesbare terugval. */
@@ -747,7 +745,6 @@ a:hover { color: var(--accent-dark); }
 .deck--ready .deck-slide { display: none; margin: 0 auto; }
 .deck--ready .deck-slide.is-active { display: block; }
 .deck--ready .deck-controls { display: flex; }
-.deck--ready .deck-hint { display: block; }
 .deck-viewer:focus { outline: none; }
 .deck-viewer:focus-visible .deck-stage {
   outline: 2px solid var(--accent);
@@ -800,7 +797,6 @@ a:hover { color: var(--accent-dark); }
   width: auto;
   margin: 0 auto;
 }
-.deck-viewer:fullscreen .deck-hint { display: none; }
 
 /* ---------- Knoppen ---------- */
 
