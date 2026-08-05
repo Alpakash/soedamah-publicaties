@@ -699,6 +699,109 @@ a:hover { color: var(--accent-dark); }
 .back-link { margin-top: 2rem; }
 .back-link a { text-decoration: none; }
 
+/* ---------- Ingesloten presentatie (dia-teaser) ---------- */
+
+.deck { margin: 3rem 0 1rem; }
+.deck-title {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+}
+.deck-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.deck-slide {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-book);
+  background: var(--card);
+}
+.deck-controls {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+.deck-hint {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+
+/* Met JavaScript: één dia tegelijk, met bediening. Zonder JavaScript blijven
+   alle dia's onder elkaar staan als leesbare terugval. */
+.deck--ready .deck-stage {
+  display: block;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.deck--ready .deck-slide { display: none; margin: 0 auto; }
+.deck--ready .deck-slide.is-active { display: block; }
+.deck--ready .deck-controls { display: flex; }
+.deck--ready .deck-hint { display: block; }
+.deck-viewer:focus { outline: none; }
+.deck-viewer:focus-visible .deck-stage {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.deck-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--accent);
+  cursor: pointer;
+}
+.deck-btn:hover { background: var(--accent-soft); border-color: var(--accent); }
+.deck-full { font-size: 1.1rem; }
+.deck-counter {
+  min-width: 3.5rem;
+  text-align: center;
+  margin: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Volledig scherm: de actieve dia groot en gecentreerd op donkere achtergrond. */
+.deck-viewer:fullscreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #1e1a15;
+  padding: 2rem;
+}
+.deck-viewer:-webkit-full-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #1e1a15;
+  padding: 2rem;
+}
+.deck-viewer:fullscreen .deck-slide.is-active {
+  max-width: 100%;
+  max-height: 82vh;
+  width: auto;
+  margin: 0 auto;
+}
+.deck-viewer:fullscreen .deck-hint { display: none; }
+
 /* ---------- Knoppen ---------- */
 
 .btn {

@@ -91,6 +91,31 @@ include APP_ROOT . '/app/templates/header.php';
   </div>
 </article>
 
+<?php $slides = book_slides($book); ?>
+<?php if ($slides !== []): ?>
+<section class="deck" aria-label="Presentatie bij <?= e($book['title']) ?>">
+  <h2 class="deck-title">Doorblader de presentatie</h2>
+  <div class="deck-viewer" data-deck>
+    <div class="deck-stage">
+      <?php foreach ($slides as $i => $src): ?>
+        <img class="deck-slide<?= $i === 0 ? ' is-active' : '' ?>"
+             src="<?= e($src) ?>"
+             alt="Dia <?= $i + 1 ?> van <?= count($slides) ?>"
+             draggable="false"<?= $i === 0 ? '' : ' loading="lazy"' ?>>
+      <?php endforeach; ?>
+    </div>
+    <div class="deck-controls">
+      <button type="button" class="deck-btn deck-prev" aria-label="Vorige dia">&lsaquo;</button>
+      <p class="deck-counter" aria-live="polite"><span class="deck-current">1</span> / <?= count($slides) ?></p>
+      <button type="button" class="deck-btn deck-next" aria-label="Volgende dia">&rsaquo;</button>
+      <button type="button" class="deck-btn deck-full" aria-label="Volledig scherm">&#x2922;</button>
+    </div>
+    <p class="deck-hint">Klik op de dia of gebruik de pijltjestoetsen om te bladeren.</p>
+  </div>
+</section>
+<script src="<?= e(asset_url('assets/slides.js')) ?>" defer></script>
+<?php endif; ?>
+
 <aside class="author-mini">
   <img src="<?= e(url('assets/LSoedamah.jpeg')) ?>" alt="Portret van Lachman Soedamah">
   <div>
