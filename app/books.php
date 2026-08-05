@@ -77,6 +77,37 @@ function book_specs_html(string $raw): string
     return $rows === '' ? '' : '<dl class="spec-list">' . $rows . '</dl>';
 }
 
+/**
+ * Dia's van een ingesloten presentatie (teaser) bij een boek. De afbeeldingen
+ * staan in public/assets/slides/<slug>/ als bijv. 01.png, 02.png, … en worden
+ * op bestandsnaam (natuurlijk) gesorteerd getoond. Ontbreekt de map of staan er
+ * geen afbeeldingen in, dan is er simpelweg geen presentatie en toont de
+ * boekpagina niets extra's. Zo hoeft er geen kolom of beheerscherm bij: een boek
+ * krijgt een klikbare presentatie zodra de bijbehorende map met dia's bestaat.
+ *
+ * @return string[] Asset-URL's in volgorde. Leeg = geen presentatie.
+ */
+function book_slides(array $book): array
+{
+    $slug = (string) ($book['slug'] ?? '');
+    // Alleen een slug van de verwachte vorm gebruiken, zodat de mapnaam nooit
+    // buiten public/assets/slides kan wijzen.
+    if ($slug === '' || !preg_match('/^[A-Za-z0-9_-]+$/', $slug)) {
+        return [];
+    }
+    $rel = 'assets/slides/' . $slug;
+    $dir = APP_ROOT . '/public/' . $rel;
+    if (!is_dir($dir)) {
+        return [];
+    }
+    $files = glob($dir . '/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}', GLOB_BRACE) ?: [];
+    sort($files, SORT_NATURAL | SORT_FLAG_CASE);
+    return array_map(
+        static fn (string $file): string => asset_url($rel . '/' . basename($file)),
+        $files
+    );
+}
+
 function book_formats_label(array $book): string
 {
     if (book_is_physical($book)) {
