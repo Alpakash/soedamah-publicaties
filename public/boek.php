@@ -81,20 +81,25 @@ include APP_ROOT . '/app/templates/header.php';
       <?= $book['description'] ?>
     </div>
 
-    <?php $specsHtml = book_specs_html((string) ($book['specs'] ?? '')); ?>
-    <?php if ($specsHtml !== ''): ?>
-      <section class="book-specs" aria-label="Specificaties">
-        <h2 class="book-specs-title">Specificaties</h2>
-        <?= $specsHtml ?>
-      </section>
-    <?php endif; ?>
+    <?php
+    // Presentatie en specificaties worden hieronder, ná de beschrijving en over
+    // de volle breedte getoond. Het specificatieblok bouwen we hier één keer op,
+    // zodat het zowel met als zonder presentatie op dezelfde plek eindigt.
+    $slides = book_slides($book);
+    $specsHtml = book_specs_html((string) ($book['specs'] ?? ''));
+    $specsBlock = $specsHtml === '' ? '' :
+        '<section class="book-specs" aria-label="Specificaties">'
+        . '<h2 class="book-specs-title">Specificaties</h2>' . $specsHtml
+        . '</section>';
+    ?>
+    <?php if ($slides === []) { echo $specsBlock; } // zonder presentatie: specs blijven in de kolom ?>
   </div>
 </article>
 
-<?php $slides = book_slides($book); ?>
 <?php if ($slides !== []): ?>
 <section class="deck" aria-label="Presentatie bij <?= e($book['title']) ?>">
-  <h2 class="deck-title">Doorblader de presentatie</h2>
+  <h2 class="deck-title">Van staat naar natie, in beeld</h2>
+  <p class="deck-lead">Blader door de dia's voor een voorproefje van de visie.</p>
   <div class="deck-viewer" data-deck>
     <div class="deck-stage">
       <?php foreach ($slides as $i => $src): ?>
@@ -110,10 +115,10 @@ include APP_ROOT . '/app/templates/header.php';
       <button type="button" class="deck-btn deck-next" aria-label="Volgende dia">&rsaquo;</button>
       <button type="button" class="deck-btn deck-full" aria-label="Volledig scherm">&#x2922;</button>
     </div>
-    <p class="deck-hint">Klik op de dia of gebruik de pijltjestoetsen om te bladeren.</p>
   </div>
 </section>
 <script src="<?= e(asset_url('assets/slides.js')) ?>" defer></script>
+<?= $specsBlock // ná de presentatie, over de volle breedte ?>
 <?php endif; ?>
 
 <aside class="author-mini">
